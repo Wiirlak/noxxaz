@@ -2,18 +2,27 @@
 #include "Game.h"
 
 
+const sf::Time Game::globalTimer = sf::seconds(1.f / 60.f);
+
 Game::Game()
 	: mWindow(sf::VideoMode(1280, 720), "SFML works!")
+	, mTBackground()
 	, mTShip()
 {
 	mWindow.setFramerateLimit(160);
+	mTBackground.loadFromFile("D:/ESGI/cpp/Nozzax/Media/Back/retro.png");
 	mTShip.loadFromFile("D:/ESGI/cpp/Nozzax/Media/Sprites/spaceship.png");
 	initSprites();
 }
 
 void Game::initSprites()
 {
-
+	//
+	//Background
+	//
+	mBackground.setTexture(mTBackground);
+	mBackground.scale(2, 2);
+	
 	//
 	//Player
 	//
@@ -29,10 +38,22 @@ void Game::initSprites()
 
 }
 
+
 void Game::run()
 {
+	sf::Clock clock;
+	sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while (mWindow.isOpen())
     {
+		sf::Time elapsedTime = clock.restart();
+		timeSinceLastUpdate += elapsedTime;
+		while (timeSinceLastUpdate > globalTimer)
+		{
+			timeSinceLastUpdate -= globalTimer;
+
+			animate(globalTimer);
+		}
+		mBackground.move(-0.02, 0);
 		processEvents();
 		render();
     }
@@ -42,8 +63,15 @@ void Game::run()
 void Game::render()
 {
 	mWindow.clear();
+	mWindow.draw(mBackground);
 	mWindow.draw(mShip);
 	mWindow.display();
+}
+
+
+void Game::animate(sf::Time time)
+{
+	
 }
 
 
