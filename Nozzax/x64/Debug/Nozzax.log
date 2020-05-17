@@ -1,5 +1,5 @@
 ﻿  Game.cpp
-  Nozzax.cpp
-  pch.cpp
-  Génération de code en cours...
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(21,22): warning C4305: 'argument' : troncation de 'double' à 'float'
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(22,76): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(22,45): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
   Nozzax.vcxproj -> D:\ESGI\cpp\Nozzax\x64\Debug\Nozzax.exe

@@ -10,6 +10,7 @@
 #define PCH_H
 
 // TODO: add headers that you want to pre-compile here
+#include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <tchar.h>
