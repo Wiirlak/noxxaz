@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Game.h"
 
-
+const std::string globalMedia = "D:/ESGI/cpp/Nozzax/Media/";
 const sf::Time Game::globalTimer = sf::seconds(1.f / 60.f);
 
 Game::Game()
@@ -10,9 +10,32 @@ Game::Game()
 	, mTShip()
 {
 	mWindow.setFramerateLimit(160);
-	mTBackground.loadFromFile("D:/ESGI/cpp/Nozzax/Media/Back/retro.png");
-	mTShip.loadFromFile("D:/ESGI/cpp/Nozzax/Media/Sprites/spaceship.png");
+	mTBackground.loadFromFile(globalMedia + "Back/retro.png");
+	mTShip.loadFromFile(globalMedia + "Sprites/spaceship.png");
 	initSprites();
+
+	loadSounds();
+	setMusic(globalMedia + "Music/Monkey Island 2020.ogg");
+}
+
+
+void Game::setMusic(std::string path)
+{
+	if (!mMusic.openFromFile(path))
+		std::cout << "FAILED TO PLAY THE MUSIC";
+	mMusic.play();
+	mMusic.setLoop(true);
+}
+
+void Game::loadSounds()
+{
+	shot1.loadFromFile(globalMedia + "Sounds/iceball.wav");
+	mSound.setBuffer(shot1);
+}
+
+void Game::playSound(int name)
+{
+	mSound.play();
 }
 
 void Game::initSprites()
@@ -101,16 +124,27 @@ void Game::processEvents()
 void Game::handle_player_input(sf::Keyboard::Key key, bool cond)
 {
 	if (key == sf::Keyboard::Up)
+	{
 		mShip.setPosition(mShip.getPosition().x, mShip.getPosition().y - 10);
+	}
 	else if (key == sf::Keyboard::Down)
+	{
 		mShip.setPosition(mShip.getPosition().x, mShip.getPosition().y + 10);
+	}
 	else if (key == sf::Keyboard::Left)
+	{
 		mShip.setPosition(mShip.getPosition().x - 10, mShip.getPosition().y);
+	}
 	else if (key == sf::Keyboard::Right)
+	{
 		mShip.setPosition(mShip.getPosition().x + 10, mShip.getPosition().y);
+	}
 
 	if (key == sf::Keyboard::Space)
 	{
-		std::cout << "SOTER";
+		mTShot.loadFromFile(globalMedia + "Sprites/Missiles/pixel.png");
+		mShot.setTexture(mTShot);
+		mShot.setPosition(mShip.getPosition());
+		playSound(1);
 	}
 }
