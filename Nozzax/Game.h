@@ -14,16 +14,27 @@ public:
 
 private:
 	void processEvents();
+	void pause();
 	void render();
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
 
 private:
-	static const sf::Time	globalTimer;
+	static const float		PlayerSpeed;
+	static const sf::Time	GlobalTimer;
 	
 	sf::RenderWindow	mWindow;
+
+	bool mIsPaused;
+	bool mIsMovingUp;
+	bool mIsMovingDown;
+	bool mIsMovingRight;
+	bool mIsMovingLeft;
 	
 	sf::Texture			mTBackground;
 	sf::Sprite			mBackground;
+	
+	sf::Texture			mTPause;
+	sf::Sprite			mPause;
 	
 	sf::Texture			mTShip;
 	sf::Sprite			mShip;
