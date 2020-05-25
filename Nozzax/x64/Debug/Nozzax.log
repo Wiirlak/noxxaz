@@ -1,16 +1,18 @@
 ﻿  Game.cpp
-D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(54,99): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(62,99): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
           with
           [
               T=unsigned int
           ]
-D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(54,47): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(62,47): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
           with
           [
               T=unsigned int
           ]
-D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(60,22): warning C4305: 'argument' : troncation de 'double' à 'float'
-D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(61,76): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
-D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(61,45): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
-D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(89,29): warning C4305: 'argument' : troncation de 'double' à 'float'
-  Nozzax.vcxproj -> D:\ESGI\cpp\Nozzax\x64\Debug\Nozzax.exe
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(91,22): warning C4305: 'argument' : troncation de 'double' à 'float'
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(92,76): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(92,45): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(127,29): warning C4305: 'argument' : troncation de 'double' à 'float'
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(260,32): warning C4305: 'argument' : troncation de 'double' à 'float'
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(264,57): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+  Nozzax.vcxproj -> E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\x64\Debug\Nozzax.exe

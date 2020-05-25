@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Game.h"
 
-const std::string globalMedia = "D:/ESGI/cpp/Nozzax/Media/";
+const std::string globalMedia = "E:\\Autre\\Ecole\\ESGI\\4AL\\c++\\noxxaz\\Media\\";
 const sf::Time Game::GlobalTimer = sf::seconds(1.f / 60.f);
 const float Game::PlayerSpeed = 10.0f;
 
@@ -16,6 +16,11 @@ Game::Game()
 	mWindow.setFramerateLimit(160);
 	mTBackground.loadFromFile(globalMedia + "Back/retro.png");
 	mTPause.loadFromFile(globalMedia + "Sprites/pause.png");
+	mTVolumeOn.loadFromFile(globalMedia + "Sprites/carre_checked.png");
+	mTVolumeOff.loadFromFile(globalMedia + "Sprites/carre_not_checked.png");
+	mTLeave.loadFromFile(globalMedia + "Sprites/leave.png");
+	mTPlayAgain.loadFromFile(globalMedia + "Sprites/play_again.png");
+	mTVolumeText.loadFromFile(globalMedia + "Sprites/volume.png");
 	mTShip.loadFromFile(globalMedia + "Sprites/spaceship.png");
 	initSprites();
 
@@ -44,14 +49,40 @@ void Game::playSound(int name)
 }
 
 void Game::initSprites()
+
 {
+	_IsPlayerWeaponFired = false;
+
 	//
 	//Background
 	//
 	mBackground.setTexture(mTBackground);
 	mBackground.scale(2, 2);
 	mPause.setTexture(mTPause);
-	mPause.setPosition((mWindow.getSize().x / 2) - mTPause.getSize().x /2, (mWindow.getSize().y / 2) - mTPause.getSize().y / 2);
+	mPause.setPosition((mWindow.getSize().x / 2) - mTPause.getSize().x /2, (mWindow.getSize().y / 4) - mTPause.getSize().y / 2 );
+
+
+	mVolumeText.setTexture(mTVolumeText);
+	mVolumeText.setScale(0.5, 0.5);
+	mVolumeText.setPosition(mPause.getPosition().x + mTPause.getSize().x / 2 - mTVolumeText.getSize().x / 2, mPause.getPosition().y + mTPause.getSize().y + 50);
+	
+	mVolumeOn.setTexture(mTVolumeOn);
+	mVolumeOn.setPosition(mVolumeText.getPosition().x * 2, mVolumeText.getPosition().y - mTVolumeOn.getSize().y / 2);
+
+	mVolumeOff.setTexture(mTVolumeOff);
+	mVolumeOff.setPosition(mVolumeText.getPosition().x * 2, mVolumeText.getPosition().y - mTVolumeOff.getSize().y / 2);
+
+	mPlayAgain.setTexture(mTPlayAgain);
+	mPlayAgain.setScale(0.5, 0.5);
+	mPlayAgain.setPosition(mPause.getPosition().x + mTPause.getSize().x / 2 - mTVolumeText.getSize().x / 2, mVolumeText.getPosition().y + mTVolumeText.getSize().y);
+
+	mLeave.setTexture(mTLeave);
+	mLeave.setScale(0.5, 0.5);
+	mLeave.setPosition(mPause.getPosition().x + mTPause.getSize().x / 2 + 50, mVolumeText.getPosition().y + mTVolumeText.getSize().y);
+
+
+
+
 	
 	//
 	//Player
@@ -60,6 +91,13 @@ void Game::initSprites()
 	mShip.scale(0.1, 0.1);
 	mShip.setPosition((mTShip.getSize().x / 2) * 0.3, mWindow.getSize().y / 2 - (mTShip.getSize().y / 2) * 0.1);
 	mShip.rotate(90.0);
+	std::shared_ptr<Entity> player = std::make_shared<Entity>();
+	player->m_sprite = mShip;
+	player->m_type = EntityType::player;
+	player->m_size = mTShip.getSize();
+	player->m_position = mShip.getPosition();
+	EntityManager::m_Entities.push_back(player);
+
 	
 	//
 	// Explosion
@@ -100,9 +138,17 @@ void Game::render()
 {
 	mWindow.clear();
 	mWindow.draw(mBackground);
-	mWindow.draw(mShip);
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_enabled == false)
+		{
+			continue;
+		}
+
+		mWindow.draw(entity->m_sprite);
+	}
 	if (mIsPaused)
-		mWindow.draw(mPause);
+		pause();
 	mWindow.display();
 }
 
@@ -119,7 +165,34 @@ void Game::animate(sf::Time time)
 	if (mIsMovingRight)
 		movement.x += PlayerSpeed;
 
-	mShip.move(movement);
+	//mShip.move(movement);
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (entity->m_type == EntityType::weapon)
+		{
+			sf::Vector2f movement_weapon(1.f, 0.f);
+
+			movement_weapon.x += 25;
+			_IsPlayerWeaponFired = false;
+
+			entity->m_sprite.move(movement_weapon);
+			continue;
+		}
+
+		if (entity->m_type != EntityType::player)
+		{
+			continue;
+		}
+
+		
+
+		entity->m_sprite.move(movement);
+	}
 }
 
 
@@ -147,7 +220,12 @@ void Game::processEvents()
 
 void Game::pause()
 {
-	
+	mWindow.draw(mPause);
+	mWindow.draw(mVolumeOn);
+	mWindow.draw(mVolumeOff);
+	mWindow.draw(mVolumeText);
+	mWindow.draw(mPlayAgain);
+	mWindow.draw(mLeave);
 }
 
 void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
@@ -172,11 +250,22 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 	if (key == sf::Keyboard::Space)
 	{
 		if (!isPressed) return;
+		if (_IsPlayerWeaponFired)return;
 
+		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
 		mTShot.loadFromFile(globalMedia + "Sprites/Missiles/pixel.png");
-		mShot.setTexture(mTShot);
-		mShot.setPosition(10.0,10.0);
+
+		sw->m_sprite.setTexture(mTShot);
+		sw->m_sprite.setRotation(90);
+		sw->m_sprite.setScale(0.2,0.2);
+		sw->m_size = mTShot.getSize();
+		sw->m_sprite.setPosition(
+			EntityManager::GetPlayer()->m_sprite.getPosition().x,
+			EntityManager::GetPlayer()->m_sprite.getPosition().y + EntityManager::GetPlayer()->m_sprite.getTexture()->getSize().x * 0.025);
+		sw->m_type = EntityType::weapon;
+		EntityManager::m_Entities.push_back(sw);
 		playSound(1);
+		_IsPlayerWeaponFired = true;
 	}
 
 	if(key == sf::Keyboard::Escape)
@@ -192,3 +281,4 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 		}
 	}
 }
+

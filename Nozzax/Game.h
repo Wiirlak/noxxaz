@@ -29,12 +29,30 @@ private:
 	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
+
+	bool _IsPlayerWeaponFired = false;
 	
 	sf::Texture			mTBackground;
 	sf::Sprite			mBackground;
 	
 	sf::Texture			mTPause;
 	sf::Sprite			mPause;
+
+	sf::Texture			mTVolumeOff;
+	sf::Sprite			mVolumeOff;
+
+	sf::Texture			mTVolumeOn;
+	sf::Sprite			mVolumeOn;
+
+	sf::Texture			mTVolumeText;
+	sf::Sprite			mVolumeText;
+
+	sf::Texture			mTPlayAgain;
+	sf::Sprite			mPlayAgain;
+
+	sf::Texture			mTLeave;
+	sf::Sprite			mLeave;
+
 	
 	sf::Texture			mTShip;
 	sf::Sprite			mShip;

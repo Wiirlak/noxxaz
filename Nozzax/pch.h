@@ -31,4 +31,9 @@
 #pragma comment(lib, "sfml-window-d.lib")
 #pragma comment(lib, "opengl32.lib")
 
+#include "Entity.h"
+#include "EntityManager.h"
+#include <vector>
+#include <memory>
+
 #endif //PCH_H
