@@ -1,5 +1,6 @@
 .vs/*
 
+CppProperties.json
 Debug/*
 x64/*
 
