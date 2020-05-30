@@ -6,7 +6,7 @@ const sf::Time Game::GlobalTimer = sf::seconds(1.f / 60.f);
 const float Game::PlayerSpeed = 10.0f;
 
 Game::Game()
-	: mWindow(sf::VideoMode(1280, 720), "Noxxax - Best Game ever")
+	: mWindow(sf::VideoMode(1280, 720), "Noxxaz - Best Game ever")
 	, mIsPaused(false)
 	, mIsMovingUp(false)
 	, mIsMovingDown(false)
@@ -102,8 +102,6 @@ void Game::initSprites()
 
 
 
-
-	
 	//
 	//Player
 	//

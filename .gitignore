@@ -1,7 +1,10 @@
 .vs/*
 
+CppProperties.json
 Debug/*
 x64/*
+
+*.vcx*
 
 # Prerequisites
 *.d
