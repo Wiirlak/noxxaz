@@ -20,7 +20,7 @@ Game::Game()
 	mTVolumeOff.loadFromFile(globalMedia + "Sprites/carre_not_checked.png");
 	mTLeave.loadFromFile(globalMedia + "Sprites/leave.png");
 	mTPlayAgain.loadFromFile(globalMedia + "Sprites/play_again.png");
-	mTVolumeText.loadFromFile(globalMedia + "Sprites/volume.png");
+	mTVolumeText.loadFromFile(globalMedia + "Sprites/music.png");
 	mTShip.loadFromFile(globalMedia + "Sprites/spaceship.png");
 	initSprites();
 
@@ -48,37 +48,57 @@ void Game::playSound(int name)
 	mSound.play();
 }
 
+void Game::ResetSprites()
+{
+	_IsPlayerWeaponFired = false;
+
+	EntityManager::m_Entities.clear();
+
+	std::shared_ptr<Entity> player = std::make_shared<Entity>();
+	player->m_sprite = mShip;
+	player->m_type = EntityType::player;
+	player->m_size = mTShip.getSize();
+	player->m_position = mShip.getPosition();
+	EntityManager::m_Entities.push_back(player);
+
+	mBackground.setPosition(mBackground.getOrigin());
+}
+
 void Game::initSprites()
 
 {
 	_IsPlayerWeaponFired = false;
+	_IsSoundOn = true;
 
 	//
 	//Background
 	//
 	mBackground.setTexture(mTBackground);
 	mBackground.scale(2, 2);
+
 	mPause.setTexture(mTPause);
 	mPause.setPosition((mWindow.getSize().x / 2) - mTPause.getSize().x /2, (mWindow.getSize().y / 4) - mTPause.getSize().y / 2 );
 
 
 	mVolumeText.setTexture(mTVolumeText);
-	mVolumeText.setScale(0.5, 0.5);
 	mVolumeText.setPosition(mPause.getPosition().x + mTPause.getSize().x / 2 - mTVolumeText.getSize().x / 2, mPause.getPosition().y + mTPause.getSize().y + 50);
 	
 	mVolumeOn.setTexture(mTVolumeOn);
 	mVolumeOn.setPosition(mVolumeText.getPosition().x * 2, mVolumeText.getPosition().y - mTVolumeOn.getSize().y / 2);
+	mVolumeText.setScale(0.5, 0.5);
+
 
 	mVolumeOff.setTexture(mTVolumeOff);
 	mVolumeOff.setPosition(mVolumeText.getPosition().x * 2, mVolumeText.getPosition().y - mTVolumeOff.getSize().y / 2);
 
 	mPlayAgain.setTexture(mTPlayAgain);
-	mPlayAgain.setScale(0.5, 0.5);
 	mPlayAgain.setPosition(mPause.getPosition().x + mTPause.getSize().x / 2 - mTVolumeText.getSize().x / 2, mVolumeText.getPosition().y + mTVolumeText.getSize().y);
+	mPlayAgain.setScale(0.5, 0.5);
+
 
 	mLeave.setTexture(mTLeave);
-	mLeave.setScale(0.5, 0.5);
 	mLeave.setPosition(mPause.getPosition().x + mTPause.getSize().x / 2 + 50, mVolumeText.getPosition().y + mTVolumeText.getSize().y);
+	mLeave.setScale(0.5, 0.5);
 
 
 
@@ -88,17 +108,17 @@ void Game::initSprites()
 	//Player
 	//
 	mShip.setTexture(mTShip);
-	mShip.scale(0.1, 0.1);
 	mShip.setPosition((mTShip.getSize().x / 2) * 0.3, mWindow.getSize().y / 2 - (mTShip.getSize().y / 2) * 0.1);
+
+	mShip.scale(0.1, 0.1);
 	mShip.rotate(90.0);
+
 	std::shared_ptr<Entity> player = std::make_shared<Entity>();
 	player->m_sprite = mShip;
 	player->m_type = EntityType::player;
 	player->m_size = mTShip.getSize();
 	player->m_position = mShip.getPosition();
 	EntityManager::m_Entities.push_back(player);
-
-	
 	//
 	// Explosion
 	//
@@ -147,8 +167,11 @@ void Game::render()
 
 		mWindow.draw(entity->m_sprite);
 	}
-	if (mIsPaused)
+	if (mIsPaused) 
+	{
 		pause();
+		handlePauseClick();
+	}
 	mWindow.display();
 }
 
@@ -221,8 +244,11 @@ void Game::processEvents()
 void Game::pause()
 {
 	mWindow.draw(mPause);
-	mWindow.draw(mVolumeOn);
-	mWindow.draw(mVolumeOff);
+	if(_IsSoundOn)
+		mWindow.draw(mVolumeOn);
+	else
+		mWindow.draw(mVolumeOff);
+
 	mWindow.draw(mVolumeText);
 	mWindow.draw(mPlayAgain);
 	mWindow.draw(mLeave);
@@ -271,14 +297,64 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 	if(key == sf::Keyboard::Escape)
 	{
 		if (!isPressed) return;
-		mIsPaused = !mIsPaused;
-		if (mIsPaused)
-		{
-			mMusic.pause();
-		} else
-		{
-			mMusic.play();
-		}
+		pauseExit();
+	}
+
+}
+
+void Game::pauseExit()
+{
+	mIsPaused = !mIsPaused;
+	if (mIsPaused)
+	{
+		mMusic.pause();
+	}
+	else
+	{
+		mMusic.play();
+		_clickIsPressed = false;
 	}
 }
 
+
+void Game::handlePauseClick()
+{
+	auto mouse_pos = sf::Mouse::getPosition(mWindow); // Mouse position relative to the window
+	auto translated_pos = mWindow.mapPixelToCoords(mouse_pos); // Mouse position translated into world coordinates
+
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !_clickIsPressed)
+	{
+		if (mVolumeOn.getGlobalBounds().contains(translated_pos) && _IsSoundOn) // Bouton volume On
+		{
+			// Rectangle-contains-point check
+			// Mouse is inside the sprite.
+			_IsSoundOn = false;
+			_clickIsPressed = true;
+			mMusic.setVolume(0);
+			mMusic.pause();
+		}
+		else if (mVolumeOff.getGlobalBounds().contains(translated_pos) && !_IsSoundOn) // Bouton volume Off
+		{
+			_IsSoundOn = true;
+			mMusic.setVolume(100);
+			_clickIsPressed = true;
+			mMusic.play();
+
+		}
+		else if (mLeave.getGlobalBounds().contains(translated_pos)) // Bouton quitter
+		{
+			mWindow.close();
+		}
+		else if (mPlayAgain.getGlobalBounds().contains(translated_pos)) // Bouton play again
+		{
+			ResetSprites();
+			mMusic.stop();
+			pauseExit();
+
+		}
+	}else if(!sf::Mouse::isButtonPressed(sf::Mouse::Left))
+	{
+		_clickIsPressed = false;
+
+	}
+}

@@ -11,12 +11,15 @@ public:
 	void animate(sf::Time time);
 	void run();
 	void initSprites();
+	void ResetSprites();
 
 private:
 	void processEvents();
 	void pause();
 	void render();
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
+	void handlePauseClick();
+	void pauseExit();
 
 private:
 	static const float		PlayerSpeed;
@@ -31,6 +34,8 @@ private:
 	bool mIsMovingLeft;
 
 	bool _IsPlayerWeaponFired = false;
+	bool _IsSoundOn = false;
+	bool _clickIsPressed = false;
 	
 	sf::Texture			mTBackground;
 	sf::Sprite			mBackground;

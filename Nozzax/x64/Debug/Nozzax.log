@@ -1,18 +1,18 @@
 ﻿  Game.cpp
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(62,99): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(80,99): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
           with
           [
               T=unsigned int
           ]
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(62,47): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(80,47): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
           with
           [
               T=unsigned int
           ]
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(91,22): warning C4305: 'argument' : troncation de 'double' à 'float'
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(92,76): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(92,45): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(127,29): warning C4305: 'argument' : troncation de 'double' à 'float'
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(260,32): warning C4305: 'argument' : troncation de 'double' à 'float'
-E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(264,57): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(111,76): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(111,45): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(113,22): warning C4305: 'argument' : troncation de 'double' à 'float'
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(147,29): warning C4305: 'argument' : troncation de 'double' à 'float'
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(286,32): warning C4305: 'argument' : troncation de 'double' à 'float'
+E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\Nozzax\Game.cpp(290,57): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
   Nozzax.vcxproj -> E:\Autre\Ecole\ESGI\4AL\c++\noxxaz\x64\Debug\Nozzax.exe
