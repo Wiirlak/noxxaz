@@ -1,5 +1,9 @@
 #pragma once
 
+
+#define WAVES 10
+#define SIZENEMY 30
+
 class Game
 {
 public:
@@ -20,6 +24,9 @@ private:
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
 	void handlePauseClick();
 	void pauseExit();
+	void setPlayer();
+	void setWaves(int waves = WAVES, int ecart = 2500);
+	void setWave(int wavex, int enemy);
 
 private:
 	static const float		PlayerSpeed;
@@ -73,4 +80,8 @@ private:
 	sf::SoundBuffer		engine;
 	sf::SoundBuffer		win;
 	sf::SoundBuffer		defeat;
+
+
+	sf::Texture	_TextureEnemy;
+	sf::Sprite	_Enemy[SIZENEMY];
 };

@@ -22,6 +22,8 @@ Game::Game()
 	mTPlayAgain.loadFromFile(globalMedia + "Sprites/play_again.png");
 	mTVolumeText.loadFromFile(globalMedia + "Sprites/music.png");
 	mTShip.loadFromFile(globalMedia + "Sprites/spaceship.png");
+	_TextureEnemy.loadFromFile(globalMedia + "Sprites/enemy.png");
+
 	initSprites();
 
 	loadSounds();
@@ -54,12 +56,9 @@ void Game::ResetSprites()
 
 	EntityManager::m_Entities.clear();
 
-	std::shared_ptr<Entity> player = std::make_shared<Entity>();
-	player->m_sprite = mShip;
-	player->m_type = EntityType::player;
-	player->m_size = mTShip.getSize();
-	player->m_position = mShip.getPosition();
-	EntityManager::m_Entities.push_back(player);
+	setPlayer();
+
+	setWaves();
 
 	mBackground.setPosition(mBackground.getOrigin());
 }
@@ -111,17 +110,60 @@ void Game::initSprites()
 	mShip.scale(0.1, 0.1);
 	mShip.rotate(90.0);
 
+	setPlayer();
+	//
+	// Explosion
+	//
+	//mWindow.getSize().y - (mTShip.getSize().y / 2) * 0.3
+
+
+
+	//
+	// Enemies
+	// 
+
+	setWaves();
+	
+
+}
+
+
+void Game::setWaves(int waves, int ecart)
+{
+	for (int i = 0; i < waves; i++) {
+		setWave(i * ecart, rand()% SIZENEMY);
+	}
+}
+
+void Game::setPlayer()
+{
 	std::shared_ptr<Entity> player = std::make_shared<Entity>();
 	player->m_sprite = mShip;
 	player->m_type = EntityType::player;
 	player->m_size = mTShip.getSize();
 	player->m_position = mShip.getPosition();
 	EntityManager::m_Entities.push_back(player);
-	//
-	// Explosion
-	//
-	//mWindow.getSize().y - (mTShip.getSize().y / 2) * 0.3
+}
 
+void Game::setWave(int wavex, int enemy)
+{
+	for (int i = 0; i < enemy; i++)
+	{
+		_Enemy[i].setTexture(_TextureEnemy);
+		_Enemy[i].setScale(0.3, 0.3);
+
+		_Enemy[i].setPosition(
+			(mWindow.getSize().x + _TextureEnemy.getSize().x) + rand() % 200 + wavex,
+			rand() % int(mWindow.getSize().y - _Enemy[i].getTexture()->getSize().y * _Enemy[i].getScale().y)
+		);
+
+		std::shared_ptr<Entity> se = std::make_shared<Entity>();
+		se->m_sprite = _Enemy[i];
+		se->m_type = EntityType::enemy;
+		se->m_size = _TextureEnemy.getSize();
+		se->m_position = _Enemy[i].getPosition();
+		EntityManager::m_Entities.push_back(se);
+	}
 }
 
 
@@ -205,10 +247,20 @@ void Game::animate(sf::Time time)
 			continue;
 		}
 
+		if (entity->m_type == EntityType::enemy)
+		{
+			sf::Vector2f movement(-((double)rand() / (RAND_MAX) + 2), 0.f);
+
+			entity->m_sprite.move(movement);
+		}
+
 		if (entity->m_type != EntityType::player)
 		{
 			continue;
 		}
+
+
+
 
 		
 
