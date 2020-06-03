@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Game.h"
 
-const std::string globalMedia = "E:\\Autre\\Ecole\\ESGI\\4AL\\c++\\noxxaz\\Media\\";
 const sf::Time Game::GlobalTimer = sf::seconds(1.f / 60.f);
 const float Game::PlayerSpeed = 10.0f;
 
@@ -14,22 +13,21 @@ Game::Game()
 	, mIsMovingLeft(false)
 {
 	mWindow.setFramerateLimit(160);
-	mTBackground.loadFromFile(globalMedia + "Back/retro.png");
-	mTPause.loadFromFile(globalMedia + "Sprites/pause.png");
-	mTVolumeOn.loadFromFile(globalMedia + "Sprites/carre_checked.png");
-	mTVolumeOff.loadFromFile(globalMedia + "Sprites/carre_not_checked.png");
-	mTLeave.loadFromFile(globalMedia + "Sprites/leave.png");
-	mTPlayAgain.loadFromFile(globalMedia + "Sprites/play_again.png");
-	mTVolumeText.loadFromFile(globalMedia + "Sprites/music.png");
-	mTShip.loadFromFile(globalMedia + "Sprites/spaceship.png");
-	_TextureEnemy.loadFromFile(globalMedia + "Sprites/enemy.png");
+	mTBackground.loadFromFile("Media/Back/retro.png");
+	mTPause.loadFromFile("Media/Sprites/pause.png");
+	mTVolumeOn.loadFromFile("Media/Sprites/carre_checked.png");
+	mTVolumeOff.loadFromFile("Media/Sprites/carre_not_checked.png");
+	mTLeave.loadFromFile("Media/Sprites/leave.png");
+	mTPlayAgain.loadFromFile("Media/Sprites/play_again.png");
+	mTVolumeText.loadFromFile("Media/Sprites/music.png");
+	mTShip.loadFromFile("Media/Sprites/spaceship.png");
+	_TextureEnemy.loadFromFile("Media/Sprites/enemy.png");
 
 	initSprites();
 
 	loadSounds();
-	setMusic(globalMedia + "Music/Monkey Island 2020.ogg");
+	setMusic("Media/Music/Monkey Island 2020.ogg");
 }
-
 
 void Game::setMusic(std::string path)
 {
@@ -41,7 +39,7 @@ void Game::setMusic(std::string path)
 
 void Game::loadSounds()
 {
-	shot1.loadFromFile(globalMedia + "Sounds/iceball.wav");
+	shot1.loadFromFile("Media/Sounds/iceball.wav");
 	mSound.setBuffer(shot1);
 }
 
@@ -329,7 +327,7 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 		if (_IsPlayerWeaponFired)return;
 
 		std::shared_ptr<Entity> sw = std::make_shared<Entity>();
-		mTShot.loadFromFile(globalMedia + "Sprites/Missiles/pixel.png");
+		mTShot.loadFromFile("Media/Sprites/Missiles/pixel.png");
 
 		sw->m_sprite.setTexture(mTShot);
 		sw->m_sprite.setRotation(90);

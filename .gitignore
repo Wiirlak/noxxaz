@@ -3,6 +3,8 @@
 CppProperties.json
 Debug/*
 x64/*
+Nozzax/Debug/*
+Nozzax/x64/*
 
 *.vcx*
 
