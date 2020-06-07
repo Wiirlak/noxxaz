@@ -11,6 +11,7 @@ Game::Game()
 	, mIsMovingDown(false)
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
+	, life(200)
 {
 	mWindow.setFramerateLimit(160);
 	mTBackground.loadFromFile("Media/Back/retro.png");
@@ -41,11 +42,6 @@ void Game::loadSounds()
 {
 	shot1.loadFromFile("Media/Sounds/iceball.wav");
 	mSound.setBuffer(shot1);
-}
-
-void Game::playSound(int name)
-{
-	mSound.play();
 }
 
 void Game::ResetSprites()
@@ -140,6 +136,7 @@ void Game::setPlayer()
 	player->m_type = EntityType::player;
 	player->m_size = mTShip.getSize();
 	player->m_position = mShip.getPosition();
+	player->life = 100;
 	EntityManager::m_Entities.push_back(player);
 }
 
@@ -160,6 +157,7 @@ void Game::setWave(int wavex, int enemy)
 		se->m_type = EntityType::enemy;
 		se->m_size = _TextureEnemy.getSize();
 		se->m_position = _Enemy[i].getPosition();
+		se->damage = 100;
 		EntityManager::m_Entities.push_back(se);
 	}
 }
@@ -187,6 +185,7 @@ void Game::run()
     	{
 			pause();
     	}
+		handleCollisions();
 		render();
     }
 }
@@ -338,7 +337,7 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 			EntityManager::GetPlayer()->m_sprite.getPosition().y + EntityManager::GetPlayer()->m_sprite.getTexture()->getSize().x * 0.025);
 		sw->m_type = EntityType::weapon;
 		EntityManager::m_Entities.push_back(sw);
-		playSound(1);
+		mSound.play();
 		_IsPlayerWeaponFired = true;
 	}
 
@@ -404,5 +403,41 @@ void Game::handlePauseClick()
 	{
 		_clickIsPressed = false;
 
+	}
+}
+
+void Game::handleCollisions()
+{
+	handleCollisionPlayer();
+}
+
+void Game::handleCollisionPlayer()
+{
+	for (std::shared_ptr<Entity> weapon : EntityManager::m_Entities)
+	{
+		if (weapon->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (weapon->m_type == EntityType::enemyWeapon || weapon->m_type == EntityType::enemy)
+		{
+			sf::FloatRect boundWeapon;
+			boundWeapon = weapon->m_sprite.getGlobalBounds();
+
+			std::shared_ptr<Entity> player = EntityManager::GetPlayer();
+			sf::FloatRect boundPlayer;
+			boundPlayer = player->m_sprite.getGlobalBounds();
+
+			if (boundWeapon.intersects(boundPlayer) == true)
+			{
+				life -= weapon->damage;
+				if (life <= 0) {
+					mWindow.close();
+				}
+				weapon->m_enabled = false;
+				break;
+			}
+		}	
 	}
 }
