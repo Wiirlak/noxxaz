@@ -70,7 +70,6 @@ private:
 	
 	sf::Texture			mTShip;
 	sf::Sprite			mShip;
-	int					life;
 	
 	sf::Texture			mTShot;
 	sf::Sprite			mShot;
