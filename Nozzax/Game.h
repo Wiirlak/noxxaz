@@ -76,10 +76,11 @@ private:
 
 	sf::Music			mMusic;
 	
-	sf::Sound			mSound;
+	sf::Sound			mSoundShot;
+	sf::Sound			mSoundHit;
 	sf::SoundBuffer		shot1;
 	sf::SoundBuffer		shot2;
-	sf::SoundBuffer		engine;
+	sf::SoundBuffer		explode;
 	sf::SoundBuffer		win;
 	sf::SoundBuffer		defeat;
 	sf::SoundBuffer		hitPlayer;

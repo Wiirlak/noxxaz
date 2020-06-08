@@ -26,7 +26,7 @@ Game::Game()
 	initSprites();
 
 	loadSounds();
-	//setMusic("Media/Music/Monkey Island 2020.ogg");
+	setMusic("Media/Music/Monkey Island 2020.ogg");
 }
 
 void Game::setMusic(std::string path)
@@ -40,7 +40,10 @@ void Game::setMusic(std::string path)
 void Game::loadSounds()
 {
 	shot1.loadFromFile("Media/Sounds/iceball.wav");
-	mSound.setBuffer(shot1);
+	shot2.loadFromFile("Media/Sounds/iceball.wav");
+	hitPlayer.loadFromFile("Media/Sounds/rlaunch.wav");
+	hitEnnemy.loadFromFile("Media/Sounds/Hitmarker_sound.wav");
+	explode.loadFromFile("Media/Sounds/8bit_bomb_explosion.wav");
 }
 
 void Game::ResetSprites()
@@ -333,7 +336,8 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 		sw->m_type = EntityType::weapon;
 		sw->damage = 5;
 		EntityManager::m_Entities.push_back(sw);
-		mSound.play();
+		mSoundShot.setBuffer(shot1);
+		mSoundShot.play();
 		_IsPlayerWeaponFired = true;
 	}
 
@@ -402,6 +406,7 @@ void Game::handlePauseClick()
 	}
 }
 
+
 void Game::handleCollisions()
 {
 	std::shared_ptr<Entity> player = EntityManager::GetPlayer();
@@ -422,7 +427,6 @@ void Game::handleCollisions()
 			{
 				if (entity->m_sprite.getPosition().x < 0 - (entity->m_sprite.getTexture()->getSize().x * entity->m_sprite.getScale().x))
 				{
-					std::cout << "x :" << entity->m_position.x << "| y :" << entity->m_position.y << std::endl;
 					player->life = player->life - entity->damage;
 					entity->m_enabled = false;
 					break;
@@ -430,17 +434,21 @@ void Game::handleCollisions()
 			}
 			if (boundWeapon.intersects(boundPlayer) == true)
 			{
+				mSoundHit.setBuffer(hitPlayer);
+				mSoundHit.play();
 				player->life = player->life - entity->damage;
 				entity->m_enabled = false;
 				break;
 			}
 			if (player->life <= 0) {
-				mWindow.close();
+				mSoundHit.setBuffer(explode);
+				mSoundHit.play();
+				mIsPaused = true;
 			}
 		}
 		else if (entity->m_type == EntityType::weapon) // Player shot enemy
 		{
-			if (entity->m_position.x > mWindow.getSize().x)
+			if (entity->m_sprite.getPosition().x > mWindow.getSize().x)
 			{
 				entity->m_enabled = false;
 			}
@@ -456,10 +464,16 @@ void Game::handleCollisions()
 					boundEnemy = enemy->m_sprite.getGlobalBounds();
 					if (boundEnemy.intersects(boundWeapon) == true)
 					{
+						mSoundHit.setBuffer(hitEnnemy);
+						mSoundHit.play();
 						player->life += (enemy->damage / 10);
 						enemy->life = enemy->life - player->damage;
 						if (enemy->life <= 0)
+						{
+							mSoundHit.setBuffer(explode);
+							mSoundHit.play();
 							enemy->m_enabled = false;
+						}
 						entity->m_enabled = false;
 						break;
 					}
