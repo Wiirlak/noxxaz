@@ -23,6 +23,8 @@ public:
 	sf::Vector2f m_position;
 	EntityType m_type;
 	bool m_enabled = true;
+	int life;
+	int damage;
 
 	// Enemy only
 	bool m_bLeftToRight = true;

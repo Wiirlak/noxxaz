@@ -9,24 +9,26 @@ class Game
 public:
 	Game();
 	~Game() { };
-	void setMusic(std::string path);
-	void loadSounds();
-	void playSound(int name);
-	void animate(sf::Time time);
 	void run();
-	void initSprites();
-	void ResetSprites();
 
 private:
+	void setMusic(std::string path);
+	void loadSounds();
+	void animate(sf::Time time);
+	void initSprites();
+	void ResetSprites();
 	void processEvents();
 	void pause();
 	void render();
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
 	void handlePauseClick();
+	void handleCollisions();
+	void handleCollisionPlayer();
 	void pauseExit();
 	void setPlayer();
 	void setWaves(int waves = WAVES, int ecart = 2500);
 	void setWave(int wavex, int enemy);
+	
 
 private:
 	static const float		PlayerSpeed;
@@ -74,12 +76,15 @@ private:
 
 	sf::Music			mMusic;
 	
-	sf::Sound			mSound;
+	sf::Sound			mSoundShot;
+	sf::Sound			mSoundHit;
 	sf::SoundBuffer		shot1;
 	sf::SoundBuffer		shot2;
-	sf::SoundBuffer		engine;
+	sf::SoundBuffer		explode;
 	sf::SoundBuffer		win;
 	sf::SoundBuffer		defeat;
+	sf::SoundBuffer		hitPlayer;
+	sf::SoundBuffer		hitEnnemy;
 
 
 	sf::Texture	_TextureEnemy;

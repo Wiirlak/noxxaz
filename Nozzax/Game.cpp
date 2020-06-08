@@ -40,12 +40,10 @@ void Game::setMusic(std::string path)
 void Game::loadSounds()
 {
 	shot1.loadFromFile("Media/Sounds/iceball.wav");
-	mSound.setBuffer(shot1);
-}
-
-void Game::playSound(int name)
-{
-	mSound.play();
+	shot2.loadFromFile("Media/Sounds/iceball.wav");
+	hitPlayer.loadFromFile("Media/Sounds/rlaunch.wav");
+	hitEnnemy.loadFromFile("Media/Sounds/Hitmarker_sound.wav");
+	explode.loadFromFile("Media/Sounds/8bit_bomb_explosion.wav");
 }
 
 void Game::ResetSprites()
@@ -140,6 +138,7 @@ void Game::setPlayer()
 	player->m_type = EntityType::player;
 	player->m_size = mTShip.getSize();
 	player->m_position = mShip.getPosition();
+	player->life = 50;
 	EntityManager::m_Entities.push_back(player);
 }
 
@@ -160,6 +159,8 @@ void Game::setWave(int wavex, int enemy)
 		se->m_type = EntityType::enemy;
 		se->m_size = _TextureEnemy.getSize();
 		se->m_position = _Enemy[i].getPosition();
+		se->damage = 10;
+		se->life = 20;
 		EntityManager::m_Entities.push_back(se);
 	}
 }
@@ -187,6 +188,7 @@ void Game::run()
     	{
 			pause();
     	}
+		handleCollisions();
 		render();
     }
 }
@@ -256,11 +258,6 @@ void Game::animate(sf::Time time)
 		{
 			continue;
 		}
-
-
-
-
-		
 
 		entity->m_sprite.move(movement);
 	}
@@ -337,8 +334,10 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 			EntityManager::GetPlayer()->m_sprite.getPosition().x,
 			EntityManager::GetPlayer()->m_sprite.getPosition().y + EntityManager::GetPlayer()->m_sprite.getTexture()->getSize().x * 0.025);
 		sw->m_type = EntityType::weapon;
+		sw->damage = 5;
 		EntityManager::m_Entities.push_back(sw);
-		playSound(1);
+		mSoundShot.setBuffer(shot1);
+		mSoundShot.play();
 		_IsPlayerWeaponFired = true;
 	}
 
@@ -404,5 +403,82 @@ void Game::handlePauseClick()
 	{
 		_clickIsPressed = false;
 
+	}
+}
+
+
+void Game::handleCollisions()
+{
+	std::shared_ptr<Entity> player = EntityManager::GetPlayer();
+	sf::FloatRect boundPlayer = player->m_sprite.getGlobalBounds();
+	
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_enabled == false)
+		{
+			continue;
+		}
+
+		sf::FloatRect boundWeapon;
+		boundWeapon = entity->m_sprite.getGlobalBounds();
+		if (entity->m_type == EntityType::enemyWeapon || entity->m_type == EntityType::enemy) // Enemy hit player
+		{
+			if (entity->m_type == EntityType::enemy)
+			{
+				if (entity->m_sprite.getPosition().x < 0 - (entity->m_sprite.getTexture()->getSize().x * entity->m_sprite.getScale().x))
+				{
+					player->life = player->life - entity->damage;
+					entity->m_enabled = false;
+					break;
+				}
+			}
+			if (boundWeapon.intersects(boundPlayer) == true)
+			{
+				mSoundHit.setBuffer(hitPlayer);
+				mSoundHit.play();
+				player->life = player->life - entity->damage;
+				entity->m_enabled = false;
+				break;
+			}
+			if (player->life <= 0) {
+				mSoundHit.setBuffer(explode);
+				mSoundHit.play();
+				mIsPaused = true;
+			}
+		}
+		else if (entity->m_type == EntityType::weapon) // Player shot enemy
+		{
+			if (entity->m_sprite.getPosition().x > mWindow.getSize().x)
+			{
+				entity->m_enabled = false;
+			}
+			for (std::shared_ptr<Entity> enemy : EntityManager::m_Entities)
+			{
+				if (enemy->m_enabled == false)
+				{
+					continue;
+				}
+				if (enemy->m_type == EntityType::enemy)
+				{
+					sf::FloatRect boundEnemy;
+					boundEnemy = enemy->m_sprite.getGlobalBounds();
+					if (boundEnemy.intersects(boundWeapon) == true)
+					{
+						mSoundHit.setBuffer(hitEnnemy);
+						mSoundHit.play();
+						player->life += (enemy->damage / 10);
+						enemy->life = enemy->life - player->damage;
+						if (enemy->life <= 0)
+						{
+							mSoundHit.setBuffer(explode);
+							mSoundHit.play();
+							enemy->m_enabled = false;
+						}
+						entity->m_enabled = false;
+						break;
+					}
+				}
+			}
+		}
 	}
 }
