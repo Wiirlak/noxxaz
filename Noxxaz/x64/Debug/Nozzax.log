@@ -1,0 +1,41 @@
+﻿  Game.cpp
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(76,99): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(76,47): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(104,76): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(104,45): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(106,22): warning C4305: 'argument' : troncation de 'double' à 'float'
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(114,92): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(114,46): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(157,30): warning C4305: 'argument' : troncation de 'double' à 'float'
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(161,11): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(160,69): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(259,26): warning C4244: 'argument' : conversion de 'double' en 'T', perte possible de données
+          with
+          [
+              T=float
+          ]
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(345,32): warning C4305: 'argument' : troncation de 'double' à 'float'
+D:\ESGI\cpp\Nozzax\Nozzax\Game.cpp(349,57): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+  Nozzax.cpp
+  Génération de code en cours...
+  Nozzax.vcxproj -> D:\ESGI\cpp\Nozzax\x64\Debug\Nozzax.exe
