@@ -472,7 +472,7 @@ void Game::handleCollisions()
 				{
 					continue;
 				}
-				if (enemy->m_type == EntityType::enemy)
+				if (enemy->m_type == EntityType::enemy || enemy->m_type == EntityType::boss)
 				{
 					sf::FloatRect boundEnemy;
 					boundEnemy = enemy->m_sprite.getGlobalBounds();
