@@ -3,6 +3,7 @@
 
 const sf::Time Game::GlobalTimer = sf::seconds(1.f / 60.f);
 const float Game::PlayerSpeed = 10.0f;
+const float Game::BackgroundSpeed = 0.1f;
 
 Game::Game()
 	: mWindow(sf::VideoMode(1280, 720), "Noxxaz - Best Game ever")
@@ -21,6 +22,7 @@ Game::Game()
 	mTPlayAgain.loadFromFile("Media/Sprites/play_again.png");
 	mTVolumeText.loadFromFile("Media/Sprites/music.png");
 	mTShip.loadFromFile("Media/Sprites/spaceship.png");
+	mTBoss.loadFromFile("Media/Sprites/Boss/frame_00_delay-0.08s.png");
 	_TextureEnemy.loadFromFile("Media/Sprites/enemy.png");
 
 	initSprites();
@@ -60,7 +62,6 @@ void Game::ResetSprites()
 }
 
 void Game::initSprites()
-
 {
 	_IsPlayerWeaponFired = false;
 	_IsSoundOn = true;
@@ -96,7 +97,6 @@ void Game::initSprites()
 	mLeave.setScale(0.5, 0.5);
 
 
-
 	//
 	//Player
 	//
@@ -106,21 +106,17 @@ void Game::initSprites()
 	mShip.scale(0.1, 0.1);
 	mShip.rotate(90.0);
 
+
+	//
+	//Boss
+	//
+	mBoss.setTexture(mTBoss);
+	mBoss.setPosition((mWindow.getSize().x * 2) - mTBoss.getSize().x, mWindow.getSize().y / 2 - mTBoss.getSize().y / 2);
+
+
 	setPlayer();
-	//
-	// Explosion
-	//
-	//mWindow.getSize().y - (mTShip.getSize().y / 2) * 0.3
-
-
-
-	//
-	// Enemies
-	// 
-
 	setWaves();
-	
-
+	setBoss();
 }
 
 
@@ -129,6 +125,17 @@ void Game::setWaves(int waves, int ecart)
 	for (int i = 0; i < waves; i++) {
 		setWave(i * ecart, rand()% SIZENEMY);
 	}
+}
+
+void Game::setBoss()
+{
+	std::shared_ptr<Entity> boss = std::make_shared<Entity>();
+	boss->m_sprite = mBoss;
+	boss->m_type = EntityType::boss;
+	boss->m_size = mTBoss.getSize();
+	boss->m_position = mBoss.getPosition();
+	boss->life = 500;
+	EntityManager::m_Entities.push_back(boss);
 }
 
 void Game::setPlayer()
@@ -180,10 +187,8 @@ void Game::run()
 			while (timeSinceLastUpdate > GlobalTimer)
 			{
 				timeSinceLastUpdate -= GlobalTimer;
-
 				animate(GlobalTimer);
 			}
-			mBackground.move(-0.02, 0);
     	} else
     	{
 			pause();
@@ -218,6 +223,8 @@ void Game::render()
 
 void Game::animate(sf::Time time)
 {
+	float bgMove = mBackground.getPosition().x <= - float(mTBackground.getSize().x - 10) ? 0 : BackgroundSpeed;
+	
 	sf::Vector2f movement(0.f, 0.f);
 	if (mIsMovingUp)
 		movement.y -= PlayerSpeed;
@@ -254,6 +261,11 @@ void Game::animate(sf::Time time)
 			entity->m_sprite.move(movement);
 		}
 
+		if (entity->m_type == EntityType::boss)
+		{
+			entity->m_sprite.move(-bgMove, 0);
+		}
+
 		if (entity->m_type != EntityType::player)
 		{
 			continue;
@@ -261,6 +273,8 @@ void Game::animate(sf::Time time)
 
 		entity->m_sprite.move(movement);
 	}
+	
+	mBackground.move(-bgMove, 0);
 }
 
 

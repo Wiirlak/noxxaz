@@ -7,7 +7,7 @@ enum EntityType
 	enemyWeapon,
 	enemyMasterWeapon,
 	enemy,
-	enemyMaster,
+	boss,
 	block
 };
 

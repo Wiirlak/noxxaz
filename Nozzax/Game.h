@@ -27,11 +27,13 @@ private:
 	void pauseExit();
 	void setPlayer();
 	void setWaves(int waves = WAVES, int ecart = 2500);
+	void setBoss();
 	void setWave(int wavex, int enemy);
 	
 
 private:
 	static const float		PlayerSpeed;
+	static const float		BackgroundSpeed;
 	static const sf::Time	GlobalTimer;
 	
 	sf::RenderWindow	mWindow;
@@ -67,13 +69,18 @@ private:
 	sf::Texture			mTLeave;
 	sf::Sprite			mLeave;
 
-	
 	sf::Texture			mTShip;
 	sf::Sprite			mShip;
 	
 	sf::Texture			mTShot;
 	sf::Sprite			mShot;
 
+	sf::Texture			_TextureEnemy;
+	sf::Sprite			_Enemy[SIZENEMY];
+	
+	sf::Texture			mTBoss;
+	sf::Sprite			mBoss;
+	
 	sf::Music			mMusic;
 	
 	sf::Sound			mSoundShot;
@@ -85,8 +92,4 @@ private:
 	sf::SoundBuffer		defeat;
 	sf::SoundBuffer		hitPlayer;
 	sf::SoundBuffer		hitEnnemy;
-
-
-	sf::Texture	_TextureEnemy;
-	sf::Sprite	_Enemy[SIZENEMY];
 };
