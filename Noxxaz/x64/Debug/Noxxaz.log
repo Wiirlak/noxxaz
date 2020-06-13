@@ -1,0 +1,46 @@
+﻿D:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(467,5): warning MSB8028: Le répertoire intermédiaire (x64\Debug\) contient des fichiers partagés provenant d'un autre projet (Nozzax.vcxproj). Cela peut entraîner un comportement de nettoyage et de régénération incorrect.
+  Entity.cpp
+  EntityManager.cpp
+  Game.cpp
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(76,99): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(76,47): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(104,76): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(104,45): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(106,22): warning C4305: 'argument' : troncation de 'double' à 'float'
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(114,92): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(114,46): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(157,30): warning C4305: 'argument' : troncation de 'double' à 'float'
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(161,11): warning C4244: 'argument' : conversion de 'int' en 'float', perte possible de données
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(160,69): warning C4244: 'argument' : conversion de 'T' en 'float', perte possible de données
+          with
+          [
+              T=unsigned int
+          ]
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(259,26): warning C4244: 'argument' : conversion de 'double' en 'T', perte possible de données
+          with
+          [
+              T=float
+          ]
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(345,32): warning C4305: 'argument' : troncation de 'double' à 'float'
+D:\ESGI\cpp\Noxxaz\Noxxaz\Game.cpp(349,57): warning C4244: 'argument' : conversion de 'double' en 'float', perte possible de données
+  Noxxaz.cpp
+  pch.cpp
+  Weapon.cpp
+  Génération de code en cours...
+  Noxxaz.vcxproj -> D:\ESGI\cpp\Noxxaz\x64\Debug\Noxxaz.exe
