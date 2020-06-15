@@ -169,7 +169,7 @@ void Game::setWaves(int waves)
 	std::srand(time(0));
 
 	for (int i = 0; i < waves; i++) {
-		setWave(mWindow.getSize().x + (ecart * i), 5 + std::rand() % SIZENEMY);
+		setWave(mWindow.getSize().x + (ecart * i), std::rand() % SIZENEMY);
 	}
 }
 
