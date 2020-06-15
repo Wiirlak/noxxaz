@@ -25,9 +25,8 @@ private:
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
 	void handlePauseClick();
 	void handleCollisions();
-	void handleCollisionPlayer();
 	void DisplayTexts();
-	void pauseExit();
+	void pauseSwitch();
 	void setPlayer();
 	void setWaves(int waves = WAVES);
 	void setBoss();
