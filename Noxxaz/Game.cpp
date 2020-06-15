@@ -1,9 +1,12 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Game.h"
 
-const sf::Time Game::GlobalTimer = sf::seconds(1.f / 60.f);
-const float Game::PlayerSpeed = 10.0f;
-const float Game::BackgroundSpeed = 0.1f;
+const float Game::PlayerSpeed = 5.0f;
+const float Game::BackgroundSpeed = .1f;
+const float Game::EnemySpeed = 0.5f;
+const float Game::ProjectileSpeed = 0.5f;
+
+
 
 Game::Game()
 	: mWindow(sf::VideoMode(1280, 720), "Noxxaz - Best Game ever")
@@ -24,6 +27,8 @@ Game::Game()
 	mTShip.loadFromFile("Media/Sprites/spaceship.png");
 	mTBoss.loadFromFile("Media/Sprites/Boss/frame_00_delay-0.08s.png");
 	_TextureEnemy.loadFromFile("Media/Sprites/enemy.png");
+	mFont.loadFromFile("Media/Fonts/MonsterFriendFore.otf");
+
 
 	initSprites();
 
@@ -57,6 +62,8 @@ void Game::ResetSprites()
 	setPlayer();
 
 	setWaves();
+
+	setBoss();
 
 	mBackground.setPosition(mBackground.getOrigin());
 }
@@ -117,21 +124,19 @@ void Game::initSprites()
 	setPlayer();
 	setWaves();
 	setBoss();
+
+	lifeText.setFont(mFont);
+	lifeText.setCharacterSize(70);
+	lifeText.setPosition(0,mWindow.getSize().y - lifeText.getCharacterSize());
 }
 
-
-void Game::setWaves(int waves, int ecart)
-{
-	for (int i = 0; i < waves; i++) {
-		setWave(i * ecart, rand()% SIZENEMY);
-	}
-}
 
 void Game::setBoss()
 {
 	std::shared_ptr<Entity> boss = std::make_shared<Entity>();
 	boss->m_sprite = mBoss;
 	boss->m_type = EntityType::boss;
+	boss->damage = 15;
 	boss->m_size = mTBoss.getSize();
 	boss->m_position = mBoss.getPosition();
 	boss->life = 500;
@@ -145,21 +150,39 @@ void Game::setPlayer()
 	player->m_type = EntityType::player;
 	player->m_size = mTShip.getSize();
 	player->m_position = mShip.getPosition();
+	player->damage = 10;
 	player->life = 50;
 	EntityManager::m_Entities.push_back(player);
 }
 
+void Game::setWaves(int waves)
+{
+
+	float ecart = mWindow.getSize().x / waves;
+	//std::cout << "Debut spawn " + std::to_string(mWindow.getSize().x + ecart) << std::endl;
+	//std::cout << "fin d'ecran spawn " + std::to_string(mWindow.getSize().x *2 ) << std::endl;
+	std::srand(time(0));
+
+	for (int i = 0; i < waves; i++) {
+		//std::cout << "Vague  :" + std::to_string(i) + " start spawn : " + std::to_string(mWindow.getSize().x + (ecart * i)) << std::endl;
+		setWave(mWindow.getSize().x + (ecart * i), std::rand() % SIZENEMY);
+	}
+}
+
 void Game::setWave(int wavex, int enemy)
 {
+
 	for (int i = 0; i < enemy; i++)
 	{
 		_Enemy[i].setTexture(_TextureEnemy);
 		_Enemy[i].setScale(0.3, 0.3);
 
+
 		_Enemy[i].setPosition(
-			(mWindow.getSize().x + _TextureEnemy.getSize().x) + rand() % 200 + wavex,
-			rand() % int(mWindow.getSize().y - _Enemy[i].getTexture()->getSize().y * _Enemy[i].getScale().y)
+			wavex + std::rand() % 50,
+			std::rand() % int(mWindow.getSize().y - _Enemy[i].getTexture()->getSize().y * _Enemy[i].getScale().y)
 		);
+		//std::cout << "Enemy :" + std::to_string(i) + " postition: "+ std::to_string(_Enemy[i].getPosition().x) << std::endl;
 
 		std::shared_ptr<Entity> se = std::make_shared<Entity>();
 		se->m_sprite = _Enemy[i];
@@ -175,27 +198,47 @@ void Game::setWave(int wavex, int enemy)
 
 void Game::run()
 {
-	sf::Clock clock;
-	sf::Time timeSinceLastUpdate = sf::Time::Zero;
     while (mWindow.isOpen())
     {
 		processEvents();
     	if (!mIsPaused)
     	{
-			sf::Time elapsedTime = clock.restart();
-			timeSinceLastUpdate += elapsedTime;
-			while (timeSinceLastUpdate > GlobalTimer)
-			{
-				timeSinceLastUpdate -= GlobalTimer;
-				animate(GlobalTimer);
-			}
+				animate();
+			handleCollisions();
     	} else
     	{
 			pause();
     	}
-		handleCollisions();
 		render();
+		DisplayTexts();
+
     }
+}
+
+void Game::DisplayTexts() {
+	int life =  EntityManager::GetPlayer()->life;
+	std::string life_str = "";
+	for (int i = 0; i < life / 10; i++) {
+		life_str += "+";
+	}
+	if (life > 0) {
+		if (life <= 10) {
+			lifeText.setFillColor(sf::Color(235, 52, 83));
+		}else if (life < 40) {
+			lifeText.setFillColor(sf::Color(235, 52, 186));
+		}
+		else {
+			lifeText.setFillColor(sf::Color(52, 235, 116));
+
+		}
+		lifeText.setString(life_str);
+	}
+	else {
+		lifeText.setFillColor(sf::Color::Yellow);
+		lifeText.setString("CHEH !");
+	}
+	std::cout << std::to_string(life) << std::endl;
+
 }
 
 
@@ -217,11 +260,12 @@ void Game::render()
 		pause();
 		handlePauseClick();
 	}
+	mWindow.draw(lifeText);
 	mWindow.display();
 }
 
 
-void Game::animate(sf::Time time)
+void Game::animate()
 {
 	float bgMove = mBackground.getPosition().x <= - float(mTBackground.getSize().x - 10) ? 0 : BackgroundSpeed;
 	
@@ -243,35 +287,39 @@ void Game::animate(sf::Time time)
 			continue;
 		}
 
-		if (entity->m_type == EntityType::weapon)
+		else if (entity->m_type == EntityType::weapon)
 		{
-			sf::Vector2f movement_weapon(1.f, 0.f);
+			sf::Vector2f movement_weapon(ProjectileSpeed, 0.f);
 
-			movement_weapon.x += 25;
+			movement_weapon.x += 15;
 			_IsPlayerWeaponFired = false;
 
 			entity->m_sprite.move(movement_weapon);
-			continue;
 		}
 
-		if (entity->m_type == EntityType::enemy)
+		else if (entity->m_type == EntityType::enemy)
 		{
-			sf::Vector2f movement(-((double)rand() / (RAND_MAX) + 2), 0.f);
+			if (entity->m_sprite.getPosition().x > mWindow.getSize().x) {
+				sf::Vector2f movement2(-BackgroundSpeed, 0.f);
+				entity->m_sprite.move(movement2);
+			}
+			else {
+				sf::Vector2f movement2(-((double)std::rand() / (RAND_MAX)+2) * EnemySpeed, 0.f);
+				entity->m_sprite.move(movement2);
+			}
 
-			entity->m_sprite.move(movement);
 		}
 
-		if (entity->m_type == EntityType::boss)
+		else if (entity->m_type == EntityType::boss)
 		{
 			entity->m_sprite.move(-bgMove, 0);
 		}
 
-		if (entity->m_type != EntityType::player)
+		else if (entity->m_type == EntityType::player)
 		{
-			continue;
+			entity->m_sprite.move(movement);
 		}
 
-		entity->m_sprite.move(movement);
 	}
 	
 	mBackground.move(-bgMove, 0);
@@ -480,13 +528,17 @@ void Game::handleCollisions()
 					{
 						mSoundHit.setBuffer(hitEnnemy);
 						mSoundHit.play();
-						player->life += (enemy->damage / 10);
 						enemy->life = enemy->life - player->damage;
 						if (enemy->life <= 0)
 						{
+							if (player->life < 70)
+								player->life += 10;
 							mSoundHit.setBuffer(explode);
 							mSoundHit.play();
 							enemy->m_enabled = false;
+							if (enemy->m_type == EntityType::boss) {
+								mIsPaused = true;
+							}
 						}
 						entity->m_enabled = false;
 						break;
