@@ -169,7 +169,7 @@ void Game::setWaves(int waves)
 	std::srand(time(0));
 
 	for (int i = 0; i < waves; i++) {
-		setWave(mWindow.getSize().x + (ecart * i), std::rand() % SIZENEMY);
+		setWave(mWindow.getSize().x + (ecart * i), std::rand() % SIZENEMY + MINSIZENEMY) ;
 	}
 }
 
@@ -405,7 +405,7 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 		sw->m_size = mTShot.getSize();
 		sw->m_sprite.setPosition(
 			EntityManager::GetPlayer()->m_sprite.getPosition().x,
-			EntityManager::GetPlayer()->m_sprite.getPosition().y + EntityManager::GetPlayer()->m_sprite.getTexture()->getSize().x * 0.025);
+			EntityManager::GetPlayer()->m_sprite.getPosition().y + EntityManager::GetPlayer()->m_sprite.getTexture()->getSize().x * 0.04);
 		sw->m_type = EntityType::weapon;
 		sw->damage = 5;
 		EntityManager::m_Entities.push_back(sw);

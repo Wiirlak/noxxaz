@@ -3,6 +3,7 @@
 
 #define WAVES 6
 #define SIZENEMY 15 
+#define MINSIZENEMY 5 
 
 class Game
 {
@@ -79,7 +80,7 @@ private:
 	sf::Sprite			mShot;
 
 	sf::Texture			_TextureEnemy;
-	sf::Sprite			_Enemy[SIZENEMY];
+	sf::Sprite			_Enemy[SIZENEMY+ MINSIZENEMY];
 	
 	sf::Texture			mTBoss;
 	sf::Sprite			mBoss;
