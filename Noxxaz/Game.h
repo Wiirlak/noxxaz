@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define WAVES 8
-#define SIZENEMY 20
+#define WAVES 1
+#define SIZENEMY 1
 
 class Game
 {

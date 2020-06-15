@@ -2,7 +2,7 @@
 #include "Game.h"
 
 const float Game::PlayerSpeed = 5.0f;
-const float Game::BackgroundSpeed = 0.1f;
+const float Game::BackgroundSpeed = .1f;
 const float Game::EnemySpeed = 0.5f;
 const float Game::ProjectileSpeed = 0.5f;
 
@@ -136,6 +136,7 @@ void Game::setBoss()
 	std::shared_ptr<Entity> boss = std::make_shared<Entity>();
 	boss->m_sprite = mBoss;
 	boss->m_type = EntityType::boss;
+	boss->damage = 15;
 	boss->m_size = mTBoss.getSize();
 	boss->m_position = mBoss.getPosition();
 	boss->life = 500;
@@ -149,6 +150,7 @@ void Game::setPlayer()
 	player->m_type = EntityType::player;
 	player->m_size = mTShip.getSize();
 	player->m_position = mShip.getPosition();
+	player->damage = 10;
 	player->life = 50;
 	EntityManager::m_Entities.push_back(player);
 }
@@ -157,12 +159,12 @@ void Game::setWaves(int waves)
 {
 
 	float ecart = mWindow.getSize().x / waves;
-	std::cout << "Debut spawn " + std::to_string(mWindow.getSize().x + ecart) << std::endl;
-	std::cout << "fin d'ecran spawn " + std::to_string(mWindow.getSize().x *2 ) << std::endl;
+	//std::cout << "Debut spawn " + std::to_string(mWindow.getSize().x + ecart) << std::endl;
+	//std::cout << "fin d'ecran spawn " + std::to_string(mWindow.getSize().x *2 ) << std::endl;
 	std::srand(time(0));
 
 	for (int i = 0; i < waves; i++) {
-		std::cout << "Vague  :" + std::to_string(i) + " start spawn : " + std::to_string(mWindow.getSize().x + (ecart * i)) << std::endl;
+		//std::cout << "Vague  :" + std::to_string(i) + " start spawn : " + std::to_string(mWindow.getSize().x + (ecart * i)) << std::endl;
 		setWave(mWindow.getSize().x + (ecart * i), std::rand() % SIZENEMY);
 	}
 }
@@ -180,7 +182,7 @@ void Game::setWave(int wavex, int enemy)
 			wavex + std::rand() % 50,
 			std::rand() % int(mWindow.getSize().y - _Enemy[i].getTexture()->getSize().y * _Enemy[i].getScale().y)
 		);
-		std::cout << "Enemy :" + std::to_string(i) + " postition: "+ std::to_string(_Enemy[i].getPosition().x) << std::endl;
+		//std::cout << "Enemy :" + std::to_string(i) + " postition: "+ std::to_string(_Enemy[i].getPosition().x) << std::endl;
 
 		std::shared_ptr<Entity> se = std::make_shared<Entity>();
 		se->m_sprite = _Enemy[i];
@@ -235,6 +237,7 @@ void Game::DisplayTexts() {
 		lifeText.setFillColor(sf::Color::Yellow);
 		lifeText.setString("CHEH !");
 	}
+	std::cout << std::to_string(life) << std::endl;
 
 }
 
@@ -525,14 +528,17 @@ void Game::handleCollisions()
 					{
 						mSoundHit.setBuffer(hitEnnemy);
 						mSoundHit.play();
-						if(player-> life < 70)
-							player->life += (enemy->damage / 10);
 						enemy->life = enemy->life - player->damage;
 						if (enemy->life <= 0)
 						{
+							if (player->life < 70)
+								player->life += 10;
 							mSoundHit.setBuffer(explode);
 							mSoundHit.play();
 							enemy->m_enabled = false;
+							if (enemy->m_type == EntityType::boss) {
+								mIsPaused = true;
+							}
 						}
 						entity->m_enabled = false;
 						break;
