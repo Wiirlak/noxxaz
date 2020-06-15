@@ -11,6 +11,7 @@ const float Game::ProjectileSpeed = 0.5f;
 Game::Game()
 	: mWindow(sf::VideoMode(1280, 720), "Noxxaz - Best Game ever")
 	, mIsPaused(false)
+	, mIsGameOver(false)
 	, mIsMovingUp(false)
 	, mIsMovingDown(false)
 	, mIsMovingRight(false)
@@ -28,6 +29,8 @@ Game::Game()
 	mTBoss.loadFromFile("Media/Sprites/Boss/frame_00_delay-0.08s.png");
 	_TextureEnemy.loadFromFile("Media/Sprites/enemy.png");
 	mFont.loadFromFile("Media/Fonts/MonsterFriendFore.otf");
+	mTLoose.loadFromFile("Media/Sprites/loose.png");
+	mTVictory.loadFromFile("Media/Sprites/victory.png");
 
 
 	initSprites();
@@ -82,6 +85,11 @@ void Game::initSprites()
 	mPause.setTexture(mTPause);
 	mPause.setPosition((mWindow.getSize().x / 2) - mTPause.getSize().x /2, (mWindow.getSize().y / 4) - mTPause.getSize().y / 2 );
 
+	mVictory.setTexture(mTVictory);
+	mVictory.setPosition((mWindow.getSize().x / 2) - mTVictory.getSize().x / 2, (mWindow.getSize().y / 4) - mTVictory.getSize().y / 2 );
+	
+	mLoose.setTexture(mTLoose);
+	mLoose.setPosition((mWindow.getSize().x / 2) - mTLoose.getSize().x / 2, (mWindow.getSize().y / 4) - mTLoose.getSize().y / 2);
 
 	mVolumeText.setTexture(mTVolumeText);
 	mVolumeText.setPosition(mPause.getPosition().x + mTPause.getSize().x / 2 - mTVolumeText.getSize().x / 2, mPause.getPosition().y + mTPause.getSize().y + 50);
@@ -89,7 +97,6 @@ void Game::initSprites()
 	mVolumeOn.setTexture(mTVolumeOn);
 	mVolumeOn.setPosition(mVolumeText.getPosition().x * 2, mVolumeText.getPosition().y - mTVolumeOn.getSize().y / 2);
 	mVolumeText.setScale(0.5, 0.5);
-
 
 	mVolumeOff.setTexture(mTVolumeOff);
 	mVolumeOff.setPosition(mVolumeText.getPosition().x * 2, mVolumeText.getPosition().y - mTVolumeOff.getSize().y / 2);
@@ -159,12 +166,9 @@ void Game::setWaves(int waves)
 {
 
 	float ecart = mWindow.getSize().x / waves;
-	//std::cout << "Debut spawn " + std::to_string(mWindow.getSize().x + ecart) << std::endl;
-	//std::cout << "fin d'ecran spawn " + std::to_string(mWindow.getSize().x *2 ) << std::endl;
 	std::srand(time(0));
 
 	for (int i = 0; i < waves; i++) {
-		//std::cout << "Vague  :" + std::to_string(i) + " start spawn : " + std::to_string(mWindow.getSize().x + (ecart * i)) << std::endl;
 		setWave(mWindow.getSize().x + (ecart * i), std::rand() % SIZENEMY);
 	}
 }
@@ -182,7 +186,6 @@ void Game::setWave(int wavex, int enemy)
 			wavex + std::rand() % 50,
 			std::rand() % int(mWindow.getSize().y - _Enemy[i].getTexture()->getSize().y * _Enemy[i].getScale().y)
 		);
-		//std::cout << "Enemy :" + std::to_string(i) + " postition: "+ std::to_string(_Enemy[i].getPosition().x) << std::endl;
 
 		std::shared_ptr<Entity> se = std::make_shared<Entity>();
 		se->m_sprite = _Enemy[i];
@@ -201,17 +204,13 @@ void Game::run()
     while (mWindow.isOpen())
     {
 		processEvents();
-    	if (!mIsPaused)
+    	if(!mIsPaused && !mIsGameOver)
     	{
-				animate();
+			animate();
 			handleCollisions();
-    	} else
-    	{
-			pause();
     	}
 		render();
 		DisplayTexts();
-
     }
 }
 
@@ -260,6 +259,11 @@ void Game::render()
 		pause();
 		handlePauseClick();
 	}
+	else if (mIsGameOver)
+	{
+		gameOver();
+		handlePauseClick();
+	}
 	mWindow.draw(lifeText);
 	mWindow.display();
 }
@@ -279,7 +283,6 @@ void Game::animate()
 	if (mIsMovingRight)
 		movement.x += PlayerSpeed;
 
-	//mShip.move(movement);
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
 		if (entity->m_enabled == false)
@@ -361,6 +364,16 @@ void Game::pause()
 	mWindow.draw(mLeave);
 }
 
+void Game::gameOver()
+{
+	if (mPlayerWin)
+		mWindow.draw(mVictory);
+	else
+		mWindow.draw(mLoose);
+	mWindow.draw(mPlayAgain);
+	mWindow.draw(mLeave);
+}
+
 void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 {
 	if (key == sf::Keyboard::Up)
@@ -406,6 +419,7 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 	if(key == sf::Keyboard::Escape)
 	{
 		if (!isPressed) return;
+		if (mIsGameOver) mWindow.close();
 		pauseExit();
 	}
 
@@ -505,7 +519,8 @@ void Game::handleCollisions()
 			if (player->life <= 0) {
 				mSoundHit.setBuffer(explode);
 				mSoundHit.play();
-				mIsPaused = true;
+				mPlayerWin = false;
+				mIsGameOver = true;
 			}
 		}
 		else if (entity->m_type == EntityType::weapon) // Player shot enemy
@@ -537,7 +552,8 @@ void Game::handleCollisions()
 							mSoundHit.play();
 							enemy->m_enabled = false;
 							if (enemy->m_type == EntityType::boss) {
-								mIsPaused = true;
+								mPlayerWin = true;
+								mIsGameOver = true;
 							}
 						}
 						entity->m_enabled = false;

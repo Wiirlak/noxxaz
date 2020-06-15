@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define WAVES 1
-#define SIZENEMY 1
+#define WAVES 6
+#define SIZENEMY 20
 
 class Game
 {
@@ -19,6 +19,7 @@ private:
 	void ResetSprites();
 	void processEvents();
 	void pause();
+	void gameOver();
 	void render();
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
 	void handlePauseClick();
@@ -38,8 +39,10 @@ private:
 	static const float		EnemySpeed;
 	static const float		ProjectileSpeed;
 	
-	sf::RenderWindow	mWindow;
+	sf::RenderWindow		mWindow;
 
+	bool mPlayerWin;
+	bool mIsGameOver;
 	bool mIsPaused;
 	bool mIsMovingUp;
 	bool mIsMovingDown;
@@ -52,24 +55,22 @@ private:
 	
 	sf::Texture			mTBackground;
 	sf::Sprite			mBackground;
-	
 	sf::Texture			mTPause;
 	sf::Sprite			mPause;
-
 	sf::Texture			mTVolumeOff;
 	sf::Sprite			mVolumeOff;
-
 	sf::Texture			mTVolumeOn;
 	sf::Sprite			mVolumeOn;
-
 	sf::Texture			mTVolumeText;
 	sf::Sprite			mVolumeText;
-
 	sf::Texture			mTPlayAgain;
 	sf::Sprite			mPlayAgain;
-
 	sf::Texture			mTLeave;
 	sf::Sprite			mLeave;
+	sf::Texture			mTLoose;
+	sf::Sprite			mLoose;
+	sf::Texture			mTVictory;
+	sf::Sprite			mVictory;
 
 	sf::Texture			mTShip;
 	sf::Sprite			mShip;
@@ -96,7 +97,5 @@ private:
 	sf::SoundBuffer		hitEnnemy;
 
 	sf::Text 			lifeText;
-	sf::Font	mFont;
-
-
+	sf::Font			mFont;
 };
