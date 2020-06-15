@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define WAVES 10
-#define SIZENEMY 30
+#define WAVES 8
+#define SIZENEMY 20
 
 class Game
 {
@@ -14,7 +14,7 @@ public:
 private:
 	void setMusic(std::string path);
 	void loadSounds();
-	void animate(sf::Time time);
+	void animate();
 	void initSprites();
 	void ResetSprites();
 	void processEvents();
@@ -24,9 +24,10 @@ private:
 	void handlePauseClick();
 	void handleCollisions();
 	void handleCollisionPlayer();
+	void DisplayTexts();
 	void pauseExit();
 	void setPlayer();
-	void setWaves(int waves = WAVES, int ecart = 2500);
+	void setWaves(int waves = WAVES);
 	void setBoss();
 	void setWave(int wavex, int enemy);
 	
@@ -34,7 +35,8 @@ private:
 private:
 	static const float		PlayerSpeed;
 	static const float		BackgroundSpeed;
-	static const sf::Time	GlobalTimer;
+	static const float		EnemySpeed;
+	static const float		ProjectileSpeed;
 	
 	sf::RenderWindow	mWindow;
 
@@ -92,4 +94,9 @@ private:
 	sf::SoundBuffer		defeat;
 	sf::SoundBuffer		hitPlayer;
 	sf::SoundBuffer		hitEnnemy;
+
+	sf::Text 			lifeText;
+	sf::Font	mFont;
+
+
 };
