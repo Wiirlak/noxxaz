@@ -86,7 +86,7 @@ void Game::initSprites()
 	mPause.setPosition((mWindow.getSize().x / 2) - mTPause.getSize().x /2, (mWindow.getSize().y / 4) - mTPause.getSize().y / 2 );
 
 	mVictory.setTexture(mTVictory);
-	mVictory.setPosition((mWindow.getSize().x / 2) - mTVictory.getSize().x / 2, (mWindow.getSize().y / 4) - mTVictory.getSize().y / 2 );
+	mVictory.setPosition((mWindow.getSize().x / 2) - mTVictory.getSize().x / 2, (mWindow.getSize().y / 2) - mTVictory.getSize().y / 2 );
 	
 	mLoose.setTexture(mTLoose);
 	mLoose.setPosition((mWindow.getSize().x / 2) - mTLoose.getSize().x / 2, (mWindow.getSize().y / 4) - mTLoose.getSize().y / 2);
@@ -169,7 +169,7 @@ void Game::setWaves(int waves)
 	std::srand(time(0));
 
 	for (int i = 0; i < waves; i++) {
-		setWave(mWindow.getSize().x + (ecart * i), std::rand() % SIZENEMY);
+		setWave(mWindow.getSize().x + (ecart * i), 5 + std::rand() % SIZENEMY);
 	}
 }
 
@@ -233,10 +233,8 @@ void Game::DisplayTexts() {
 		lifeText.setString(life_str);
 	}
 	else {
-		lifeText.setFillColor(sf::Color::Yellow);
-		lifeText.setString("CHEH !");
+		lifeText.setString("");
 	}
-	std::cout << std::to_string(life) << std::endl;
 
 }
 
@@ -427,7 +425,8 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 
 void Game::pauseExit()
 {
-	mIsPaused = !mIsPaused;
+	mIsPaused = false;
+	mIsGameOver = false;
 	if (mIsPaused)
 	{
 		mMusic.pause();

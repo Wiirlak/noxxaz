@@ -2,7 +2,7 @@
 
 
 #define WAVES 6
-#define SIZENEMY 20
+#define SIZENEMY 15 
 
 class Game
 {
