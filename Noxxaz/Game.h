@@ -18,6 +18,7 @@ private:
 	void render();
 	void animate();
 	void initSprites();
+	void launchBossFireSequences();
 	void ResetSprites();
 	void processEvents();
 	void pause();
@@ -38,7 +39,8 @@ private:
 	static const float		BackgroundSpeed;
 	static const float		EnemySpeed;
 	static const float		ProjectileSpeed;
-	
+	static const int		EnemyMissiles;
+
 	sf::RenderWindow		mWindow;
 
 	bool mPlayerWin;
@@ -50,8 +52,11 @@ private:
 	bool mIsMovingLeft;
 
 	bool _IsPlayerWeaponFired = false;
+	bool _IsBossWeaponFired = false;
 	bool _IsSoundOn = false;
 	bool _clickIsPressed = false;
+
+	int  _currentOffScreenEnemyWeapon = 0;
 	
 	sf::Texture			mTBackground;
 	sf::Sprite			mBackground;
@@ -83,8 +88,14 @@ private:
 	
 	sf::Texture			mTBoss;
 	sf::Sprite			mBoss;
+
+	sf::Texture			mTBossShot;
+	sf::Sprite			mBossShot;
 	
 	sf::Music			mMusic;
+	sf::Music			mMusicLoose;
+	sf::Music			mMusicWin;
+	sf::Music			mMusicBoss;
 	
 	sf::Sound			mSoundShot;
 	sf::Sound			mSoundHit;

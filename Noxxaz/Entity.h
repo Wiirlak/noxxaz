@@ -27,7 +27,7 @@ public:
 	int damage;
 
 	// Enemy only
-	bool m_bLeftToRight = true;
-	int m_times = 0;
+	float movement_x;
+	float movement_y;
 };
 

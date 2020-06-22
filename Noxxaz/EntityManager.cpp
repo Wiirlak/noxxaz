@@ -29,3 +29,21 @@ std::shared_ptr<Entity> EntityManager::GetPlayer()
 
 	return nullptr;
 }
+
+std::shared_ptr<Entity> EntityManager::GetBoss()
+{
+	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+	{
+		if (entity->m_enabled == false)
+		{
+			continue;
+		}
+
+		if (entity->m_type == EntityType::boss)
+		{
+			return entity;
+		}
+	}
+
+	return nullptr;
+}

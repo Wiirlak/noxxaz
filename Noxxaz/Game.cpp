@@ -5,6 +5,9 @@ const float Game::PlayerSpeed = 5.0f;
 const float Game::BackgroundSpeed = 10.0f;
 const float Game::EnemySpeed = 0.5f;
 const float Game::ProjectileSpeed = 0.5f;
+const int Game::EnemyMissiles = 14;
+
+
 
 Game::Game()
 	: mWindow(sf::VideoMode(1280, 720), "Noxxaz - Best Game ever")
@@ -29,11 +32,32 @@ Game::Game()
 	mFont.loadFromFile("Media/Fonts/MonsterFriendFore.otf");
 	mTLoose.loadFromFile("Media/Sprites/loose.png");
 	mTVictory.loadFromFile("Media/Sprites/victory.png");
+	mTBossShot.loadFromFile("Media/Sprites/Missiles/shot_poulpi.png");
 
 	initSprites();
 	loadSounds();
-	setMusic("Media/Music/Crab Rave.ogg");
-	//setMusic("Media/Music/Monkey Island 2020.ogg");
+	//setMusic("Media/Music/Crab Rave.ogg");
+	setMusic("Media/Music/Monkey Island 2020.ogg");
+	//setMusic("Media/Music/defeat.ogg");
+
+	if (!mMusicLoose.openFromFile("Media/Music/defeat.ogg"))
+		std::cout << "FAILED TO PLAY THE MUSIC";
+	mMusicLoose.setLoop(true);
+	mMusicLoose.setVolume(100);
+
+	if (!mMusicWin.openFromFile("Media/Music/defeat.ogg"))
+		std::cout << "FAILED TO PLAY THE MUSIC";
+	mMusicWin.setLoop(true);
+	mMusicWin.setVolume(100);
+
+	if (!mMusicBoss.openFromFile("Media/Music/boss.ogg"))
+		std::cout << "FAILED TO PLAY THE MUSIC";
+	mMusicBoss.setLoop(true);
+	mMusicBoss.setVolume(100);
+
+	//mMusicWin
+
+
 }
 
 void Game::setMusic(std::string path)
@@ -43,6 +67,7 @@ void Game::setMusic(std::string path)
 	mMusic.play();
 	mMusic.setLoop(true);
 }
+
 
 void Game::loadSounds()
 {
@@ -56,6 +81,9 @@ void Game::loadSounds()
 void Game::ResetSprites()
 {
 	_IsPlayerWeaponFired = false;
+	_IsBossWeaponFired = false;
+	_currentOffScreenEnemyWeapon = 0;
+
 	EntityManager::m_Entities.clear();
 	setPlayer();
 	setWaves();
@@ -68,6 +96,8 @@ void Game::initSprites()
 	_IsPlayerWeaponFired = false;
 	_IsSoundOn = true;
 
+	_currentOffScreenEnemyWeapon = 0;
+
 	mBackground.setTexture(mTBackground);
 	mBackground.scale(2, 2);
 
@@ -75,7 +105,7 @@ void Game::initSprites()
 	mPause.setPosition((mWindow.getSize().x / 2) - mTPause.getSize().x /2, (mWindow.getSize().y / 4) - mTPause.getSize().y / 2 );
 
 	mVictory.setTexture(mTVictory);
-	mVictory.setPosition((mWindow.getSize().x / 2) - mTVictory.getSize().x / 2, (mWindow.getSize().y / 2) - mTVictory.getSize().y / 2 );
+	mVictory.setPosition((mWindow.getSize().x / 2) - mTVictory.getSize().x / 2, (mWindow.getSize().y / 4) - mTVictory.getSize().y / 2 );
 	
 	mLoose.setTexture(mTLoose);
 	mLoose.setPosition((mWindow.getSize().x / 2) - mTLoose.getSize().x / 2, (mWindow.getSize().y / 4) - mTLoose.getSize().y / 2);
@@ -110,9 +140,34 @@ void Game::initSprites()
 	setWaves();
 	setBoss();
 
+	mBossShot.setTexture(mTBossShot);
+	mBossShot.setScale(0.2, 0.2);
+
 	lifeText.setFont(mFont);
 	lifeText.setCharacterSize(70);
 	lifeText.setPosition(0,mWindow.getSize().y - lifeText.getCharacterSize());
+}
+
+void Game::launchBossFireSequences()
+{
+	float angle = -( Game::EnemyMissiles / 4);
+	for (int i = 0; i < Game::EnemyMissiles; i++) {
+		mBossShot.setPosition(
+			EntityManager::GetBoss()->m_sprite.getPosition().x,
+			EntityManager::GetBoss()->m_sprite.getPosition().y + EntityManager::GetBoss()->m_sprite.getTexture()->getSize().x / 2);
+
+		std::shared_ptr<Entity> enemyMasterWeapon = std::make_shared<Entity>();
+		enemyMasterWeapon->m_sprite = mBossShot;
+		enemyMasterWeapon->m_type = EntityType::enemyMasterWeapon;
+		enemyMasterWeapon->damage = 10;
+		enemyMasterWeapon->m_size = mTBossShot.getSize();
+		enemyMasterWeapon->m_position = mBossShot.getPosition();
+		enemyMasterWeapon->life = 15;
+		enemyMasterWeapon->movement_x = 3;
+		enemyMasterWeapon->movement_y = angle;
+		angle += 0.5;
+		EntityManager::m_Entities.push_back(enemyMasterWeapon);
+	}
 }
 
 void Game::setBoss()
@@ -237,6 +292,17 @@ void Game::animate()
 {
 	float bgMove = mBackground.getPosition().x <= - float(mTBackground.getSize().x - 10) ? 0 : BackgroundSpeed;
 
+	if (bgMove == 0 && mMusicBoss.getStatus() != sf::SoundSource::Playing && _IsSoundOn)
+	{
+		mMusic.stop();
+		mMusicBoss.play();
+	}
+
+	if (bgMove == 0 && !_IsBossWeaponFired) {
+		launchBossFireSequences();
+		_IsBossWeaponFired = true;
+	}
+
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
 		sf::Vector2f movement(.0f, .0f);
@@ -273,6 +339,11 @@ void Game::animate()
 				movement.x += PlayerSpeed;
 			if (mIsMovingLeft && entity->m_sprite.getPosition().x > 0 + (mTShip.getSize().x * entity->m_sprite.getScale().x))
 				movement.x -= PlayerSpeed;
+		}
+		else if (entity->m_type == EntityType::enemyMasterWeapon) {
+				movement.x -= entity->movement_x;
+				movement.y -= entity->movement_y;
+				entity->m_sprite.rotate(3);
 		}
 		entity->m_sprite.move(movement);
 	}
@@ -316,10 +387,18 @@ void Game::pause()
 
 void Game::gameOver()
 {
-	if (mPlayerWin)
+	mMusic.stop();
+	mMusicBoss.stop();
+	if (mPlayerWin) {
 		mWindow.draw(mVictory);
-	else
+		if(mMusicWin.getStatus() != sf::SoundSource::Playing)
+			mMusicWin.play();
+	}
+	else {
 		mWindow.draw(mLoose);
+		if(mMusicLoose.getStatus() != sf::SoundSource::Playing)
+			mMusicLoose.play();
+	}
 	mWindow.draw(mPlayAgain);
 	mWindow.draw(mLeave);
 }
@@ -361,6 +440,7 @@ void Game::handle_player_input(sf::Keyboard::Key key, bool isPressed)
 		sw->damage = 5;
 		EntityManager::m_Entities.push_back(sw);
 		mSoundShot.setBuffer(shot1);
+		mSoundShot.setVolume(50);
 		mSoundShot.play();
 		_IsPlayerWeaponFired = true;
 	}
@@ -401,6 +481,7 @@ void Game::handlePauseClick()
 			_clickIsPressed = true;
 			mMusic.setVolume(0);
 			mMusic.pause();
+			mMusicBoss.pause();
 		}
 		else if (mVolumeOff.getGlobalBounds().contains(translated_pos) && !_IsSoundOn) // Bouton volume Off
 		{
@@ -408,6 +489,8 @@ void Game::handlePauseClick()
 			mMusic.setVolume(100);
 			_clickIsPressed = true;
 			mMusic.play();
+			mMusicBoss.play();
+
 		}
 		else if (mLeave.getGlobalBounds().contains(translated_pos)) // Bouton quitter
 		{
@@ -417,6 +500,8 @@ void Game::handlePauseClick()
 		{
 			ResetSprites();
 			mMusic.stop();
+			mMusicWin.stop();
+			mMusicLoose.stop();
 			pauseSwitch();
 		}
 	}else if(!sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -429,6 +514,7 @@ void Game::handleCollisions()
 {
 	std::shared_ptr<Entity> player = EntityManager::GetPlayer();
 	sf::FloatRect boundPlayer = player->m_sprite.getGlobalBounds();
+
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
 		if (entity->m_enabled == false)
@@ -437,7 +523,7 @@ void Game::handleCollisions()
 		}
 		sf::FloatRect boundWeapon;
 		boundWeapon = entity->m_sprite.getGlobalBounds();
-		if (entity->m_type == EntityType::enemyWeapon || // Enemy hit player
+		if (entity->m_type == EntityType::enemyMasterWeapon || // Enemy hit player
 			entity->m_type == EntityType::enemy ||
 			entity->m_type == EntityType::boss)
 		{
@@ -457,6 +543,8 @@ void Game::handleCollisions()
 				player->life = player->life - entity->damage;
 				if(entity->m_type != EntityType::boss) // Can't OS the boss
 					entity->m_enabled = false;
+				if (entity->m_type == EntityType::enemyMasterWeapon)
+					_currentOffScreenEnemyWeapon++;
 				break;
 			}
 			if (player->life <= 0) {
@@ -466,7 +554,7 @@ void Game::handleCollisions()
 				mIsGameOver = true;
 			}
 		}
-		else if (entity->m_type == EntityType::weapon) // Player shot enemy
+		if (entity->m_type == EntityType::weapon) // Player shot enemy
 		{
 			if (entity->m_sprite.getPosition().x > mWindow.getSize().x)
 			{
@@ -478,11 +566,11 @@ void Game::handleCollisions()
 				{
 					continue;
 				}
-				if (enemy->m_type == EntityType::enemy || enemy->m_type == EntityType::boss)
+				else if (enemy->m_type == EntityType::enemy || enemy->m_type == EntityType::boss)
 				{
 					sf::FloatRect boundEnemy;
 					boundEnemy = enemy->m_sprite.getGlobalBounds();
-					if (boundEnemy.intersects(boundWeapon) == true)
+					if(boundEnemy.intersects(boundWeapon) == true)
 					{
 						mSoundHit.setBuffer(hitEnnemy);
 						mSoundHit.play();
@@ -503,7 +591,43 @@ void Game::handleCollisions()
 						break;
 					}
 				}
+
+				else if(enemy->m_type == EntityType::enemyMasterWeapon)
+				{
+					sf::FloatRect boundMasterWeapon;
+					boundMasterWeapon = enemy->m_sprite.getGlobalBounds();
+					if (boundMasterWeapon.intersects(boundWeapon) == true)
+					{
+						mSoundHit.setBuffer(hitEnnemy);
+						mSoundHit.play();
+						enemy->life -= player->damage;
+						if (enemy->life <= 0)
+						{
+							mSoundHit.setBuffer(explode);
+							mSoundHit.play();
+							enemy->m_enabled = false;
+							_currentOffScreenEnemyWeapon++;
+						}
+						entity->m_enabled = false;
+						break;
+					}
+				}
+			}
+		}
+		if (entity->m_type == EntityType::enemyMasterWeapon)
+		{
+			if (entity->m_sprite.getPosition().x < 0
+				|| entity->m_sprite.getPosition().y <= - (entity->m_sprite.getTexture()->getSize().x * entity->m_sprite.getScale().x))
+			{
+				_currentOffScreenEnemyWeapon++;
+				entity->m_enabled = false;
 			}
 		}
 	}
+
+	if (_currentOffScreenEnemyWeapon == Game::EnemyMissiles) {
+		_IsBossWeaponFired = false;
+		_currentOffScreenEnemyWeapon = 0;
+	}
+
 }
