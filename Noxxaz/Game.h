@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define WAVES 1
-#define SIZENEMY 6 
+#define WAVES 9
+#define SIZENEMY 12
 #define MINSIZENEMY 5 
 
 class Game
@@ -109,4 +109,6 @@ private:
 
 	sf::Text 			lifeText;
 	sf::Font			mFont;
+
+	sf::Image			icon;
 };

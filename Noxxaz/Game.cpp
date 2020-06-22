@@ -2,7 +2,7 @@
 #include "Game.h"
 
 const float Game::PlayerSpeed = 5.0f;
-const float Game::BackgroundSpeed = 10.0f;
+const float Game::BackgroundSpeed = .1f;
 const float Game::EnemySpeed = 0.5f;
 const float Game::ProjectileSpeed = 0.5f;
 const int Game::EnemyMissiles = 14;
@@ -27,7 +27,7 @@ Game::Game()
 	mTPlayAgain.loadFromFile("Media/Sprites/play_again.png");
 	mTVolumeText.loadFromFile("Media/Sprites/music.png");
 	mTShip.loadFromFile("Media/Sprites/spaceship.png");
-	mTBoss.loadFromFile("Media/Sprites/Boss/frame_00_delay-0.08s.png");
+	mTBoss.loadFromFile("Media/Sprites/Boss/boss.png");
 	_TextureEnemy.loadFromFile("Media/Sprites/enemy.png");
 	mFont.loadFromFile("Media/Fonts/MonsterFriendFore.otf");
 	mTLoose.loadFromFile("Media/Sprites/loose.png");
@@ -36,16 +36,14 @@ Game::Game()
 
 	initSprites();
 	loadSounds();
-	//setMusic("Media/Music/Crab Rave.ogg");
 	setMusic("Media/Music/Monkey Island 2020.ogg");
-	//setMusic("Media/Music/defeat.ogg");
 
 	if (!mMusicLoose.openFromFile("Media/Music/defeat.ogg"))
 		std::cout << "FAILED TO PLAY THE MUSIC";
 	mMusicLoose.setLoop(true);
 	mMusicLoose.setVolume(100);
 
-	if (!mMusicWin.openFromFile("Media/Music/defeat.ogg"))
+	if (!mMusicWin.openFromFile("Media/Music/victory.ogg"))
 		std::cout << "FAILED TO PLAY THE MUSIC";
 	mMusicWin.setLoop(true);
 	mMusicWin.setVolume(100);
@@ -54,10 +52,6 @@ Game::Game()
 		std::cout << "FAILED TO PLAY THE MUSIC";
 	mMusicBoss.setLoop(true);
 	mMusicBoss.setVolume(100);
-
-	//mMusicWin
-
-
 }
 
 void Game::setMusic(std::string path)
@@ -146,15 +140,18 @@ void Game::initSprites()
 	lifeText.setFont(mFont);
 	lifeText.setCharacterSize(70);
 	lifeText.setPosition(0,mWindow.getSize().y - lifeText.getCharacterSize());
+
+	icon.loadFromFile("Media/ico.png");
+	mWindow.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 }
 
 void Game::launchBossFireSequences()
 {
-	float angle = -( Game::EnemyMissiles / 4);
+	float angle = -( Game::EnemyMissiles / 5);
 	for (int i = 0; i < Game::EnemyMissiles; i++) {
 		mBossShot.setPosition(
-			EntityManager::GetBoss()->m_sprite.getPosition().x,
-			EntityManager::GetBoss()->m_sprite.getPosition().y + EntityManager::GetBoss()->m_sprite.getTexture()->getSize().x / 2);
+			EntityManager::GetBoss()->m_sprite.getPosition().x + EntityManager::GetBoss()->m_sprite.getTexture()->getSize().x / 2,
+			EntityManager::GetBoss()->m_sprite.getPosition().y + EntityManager::GetBoss()->m_sprite.getTexture()->getSize().y / 2);
 
 		std::shared_ptr<Entity> enemyMasterWeapon = std::make_shared<Entity>();
 		enemyMasterWeapon->m_sprite = mBossShot;
@@ -165,7 +162,12 @@ void Game::launchBossFireSequences()
 		enemyMasterWeapon->life = 15;
 		enemyMasterWeapon->movement_x = 3;
 		enemyMasterWeapon->movement_y = angle;
-		angle += 0.5;
+		if (std::rand() % 2 == 0)
+			enemyMasterWeapon->rotate = 3;
+		else
+			enemyMasterWeapon->rotate = -3;
+		
+		angle += .43;
 		EntityManager::m_Entities.push_back(enemyMasterWeapon);
 	}
 }
@@ -292,13 +294,17 @@ void Game::animate()
 {
 	float bgMove = mBackground.getPosition().x <= - float(mTBackground.getSize().x - 10) ? 0 : BackgroundSpeed;
 
-	if (bgMove == 0 && mMusicBoss.getStatus() != sf::SoundSource::Playing && _IsSoundOn)
+	
+
+	if (EntityManager::GetBoss()->m_sprite.getPosition().x <= mWindow.getSize().x 
+		&& mMusicBoss.getStatus() != sf::SoundSource::Playing && _IsSoundOn)
 	{
 		mMusic.stop();
 		mMusicBoss.play();
 	}
 
-	if (bgMove == 0 && !_IsBossWeaponFired) {
+	if (EntityManager::GetBoss()->m_sprite.getPosition().x <= mWindow.getSize().x
+		&& !_IsBossWeaponFired) {
 		launchBossFireSequences();
 		_IsBossWeaponFired = true;
 	}
@@ -343,7 +349,7 @@ void Game::animate()
 		else if (entity->m_type == EntityType::enemyMasterWeapon) {
 				movement.x -= entity->movement_x;
 				movement.y -= entity->movement_y;
-				entity->m_sprite.rotate(3);
+				entity->m_sprite.rotate(entity->rotate);
 		}
 		entity->m_sprite.move(movement);
 	}

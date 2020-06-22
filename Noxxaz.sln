@@ -9,6 +9,8 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Noxxaz|x64 = Noxxaz|x64
+		Noxxaz|x86 = Noxxaz|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -17,6 +19,10 @@ Global
 		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Debug|x64.Build.0 = Debug|x64
 		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Debug|x86.ActiveCfg = Debug|Win32
 		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Debug|x86.Build.0 = Debug|Win32
+		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Noxxaz|x64.ActiveCfg = Noxxaz|x64
+		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Noxxaz|x64.Build.0 = Noxxaz|x64
+		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Noxxaz|x86.ActiveCfg = Noxxaz|Win32
+		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Noxxaz|x86.Build.0 = Noxxaz|Win32
 		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Release|x64.ActiveCfg = Release|x64
 		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Release|x64.Build.0 = Release|x64
 		{694420BB-26EC-4525-B2AA-269C1EA14AD4}.Release|x86.ActiveCfg = Release|Win32

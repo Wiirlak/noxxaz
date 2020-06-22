@@ -29,5 +29,6 @@ public:
 	// Enemy only
 	float movement_x;
 	float movement_y;
+	float rotate;
 };
 
