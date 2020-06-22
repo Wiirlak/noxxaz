@@ -135,7 +135,7 @@ void Game::setPlayer()
 	player->m_size = mTShip.getSize();
 	player->m_position = mShip.getPosition();
 	player->damage = 10;
-	player->life = 500;
+	player->life = 50;
 	EntityManager::m_Entities.push_back(player);
 }
 

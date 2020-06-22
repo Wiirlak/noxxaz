@@ -15,12 +15,14 @@ public:
 private:
 	void setMusic(std::string path);
 	void loadSounds();
+	void render();
 	void animate();
 	void initSprites();
 	void ResetSprites();
 	void processEvents();
 	void pause();
 	void gameOver();
+	void pauseSwitch();
 	void render();
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
 	void handlePauseClick();
