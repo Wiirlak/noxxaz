@@ -2,7 +2,7 @@
 #include "Game.h"
 
 const float Game::PlayerSpeed = 5.0f;
-const float Game::BackgroundSpeed = .1f;
+const float Game::BackgroundSpeed = 10.0f;
 const float Game::EnemySpeed = 0.5f;
 const float Game::ProjectileSpeed = 0.5f;
 

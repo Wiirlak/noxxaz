@@ -1,8 +1,8 @@
 #pragma once
 
 
-#define WAVES 6
-#define SIZENEMY 15 
+#define WAVES 1
+#define SIZENEMY 6 
 #define MINSIZENEMY 5 
 
 class Game
@@ -23,12 +23,10 @@ private:
 	void pause();
 	void gameOver();
 	void pauseSwitch();
-	void render();
 	void handle_player_input(sf::Keyboard::Key key, bool cond);
 	void handlePauseClick();
 	void handleCollisions();
 	void DisplayTexts();
-	void pauseSwitch();
 	void setPlayer();
 	void setWaves(int waves = WAVES);
 	void setBoss();
