@@ -77,6 +77,9 @@ void Game::ResetSprites()
 	_IsPlayerWeaponFired = false;
 	_IsBossWeaponFired = false;
 	_currentOffScreenEnemyWeapon = 0;
+	_IsMusicBossOn = false;
+
+	_playerScore = 0;
 
 	EntityManager::m_Entities.clear();
 	setPlayer();
@@ -140,6 +143,11 @@ void Game::initSprites()
 	lifeText.setFont(mFont);
 	lifeText.setCharacterSize(70);
 	lifeText.setPosition(0,mWindow.getSize().y - lifeText.getCharacterSize());
+
+	scoreText.setFont(mFont);
+	scoreText.setCharacterSize(35);
+	scoreText.setPosition(mWindow.getSize().x / 2 - scoreText.getCharacterSize(), 0);
+
 
 	icon.loadFromFile("Media/ico.png");
 	mWindow.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
@@ -262,6 +270,13 @@ void Game::DisplayTexts() {
 	else {
 		lifeText.setString("");
 	}
+
+
+	std::srand(std::time(nullptr));
+
+	scoreText.setFillColor(sf::Color(52, 235, 116));
+
+	scoreText.setString(std::to_string(_playerScore));
 }
 
 void Game::render()
@@ -287,6 +302,7 @@ void Game::render()
 		handlePauseClick();
 	}
 	mWindow.draw(lifeText);
+	mWindow.draw(scoreText);
 	mWindow.display();
 }
 
@@ -468,7 +484,12 @@ void Game::pauseSwitch()
 	}
 	else
 	{
-		mMusic.play();
+		if (_IsMusicBossOn) {
+			mMusicBoss.play();
+		}
+		else {
+			mMusic.play();
+		}
 		_clickIsPressed = false;
 	}
 }
@@ -494,8 +515,7 @@ void Game::handlePauseClick()
 			_IsSoundOn = true;
 			mMusic.setVolume(100);
 			_clickIsPressed = true;
-			mMusic.play();
-			mMusicBoss.play();
+			//mMusic.play();
 
 		}
 		else if (mLeave.getGlobalBounds().contains(translated_pos)) // Bouton quitter
@@ -538,6 +558,7 @@ void Game::handleCollisions()
 				if (entity->m_sprite.getPosition().x < 0 - (entity->m_sprite.getTexture()->getSize().x * entity->m_sprite.getScale().x))
 				{
 					player->life = player->life - entity->damage;
+					_playerScore -= _scorePerHitEnemy;
 					entity->m_enabled = false;
 					break;
 				}
@@ -547,6 +568,7 @@ void Game::handleCollisions()
 				mSoundHit.setBuffer(hitPlayer);
 				mSoundHit.play();
 				player->life = player->life - entity->damage;
+				_playerScore -= _scorePerHitEnemy;
 				if(entity->m_type != EntityType::boss) // Can't OS the boss
 					entity->m_enabled = false;
 				if (entity->m_type == EntityType::enemyMasterWeapon)
@@ -589,11 +611,16 @@ void Game::handleCollisions()
 							mSoundHit.play();
 							enemy->m_enabled = false;
 							if (enemy->m_type == EntityType::boss) {
+								_playerScore += _scorePerDeathBoss;
 								mPlayerWin = true;
 								mIsGameOver = true;
 							}
+							else {
+								_playerScore += _scorePerDeathEnemy;
+							}
 						}
 						entity->m_enabled = false;
+						_playerScore += _scorePerHit;
 						break;
 					}
 				}
@@ -614,6 +641,7 @@ void Game::handleCollisions()
 							enemy->m_enabled = false;
 							_currentOffScreenEnemyWeapon++;
 						}
+						_playerScore -= _scorePerHitEnemy;
 						entity->m_enabled = false;
 						break;
 					}
@@ -627,6 +655,7 @@ void Game::handleCollisions()
 			{
 				_currentOffScreenEnemyWeapon++;
 				entity->m_enabled = false;
+				_playerScore += _scorePerHit;
 			}
 		}
 	}

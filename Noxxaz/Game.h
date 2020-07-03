@@ -54,9 +54,16 @@ private:
 	bool _IsPlayerWeaponFired = false;
 	bool _IsBossWeaponFired = false;
 	bool _IsSoundOn = false;
+	bool _IsMusicBossOn = false;
 	bool _clickIsPressed = false;
 
 	int  _currentOffScreenEnemyWeapon = 0;
+
+	int _playerScore = 0;
+	int _scorePerHit = 1000;
+	int _scorePerHitEnemy = 500;
+	int _scorePerDeathEnemy = 2250;
+	int _scorePerDeathBoss = 4500;
 	
 	sf::Texture			mTBackground;
 	sf::Sprite			mBackground;
@@ -110,5 +117,9 @@ private:
 	sf::Text 			lifeText;
 	sf::Font			mFont;
 
+	sf::Text 			scoreText;
+
 	sf::Image			icon;
+
+	int					colorArray[8][3];
 };
